@@ -1,25 +1,102 @@
+<script setup>
+import { computed, onMounted, ref } from "vue";
+import axios from "../axiosFile.js";
+
+const userData = ref(null);
+const isLoading = ref(false);
+const error = ref(null);
+
+const fetchData = async () => {
+  try {
+    const token = localStorage.getItem("token");
+    if (!token) {
+      throw new Error("No token available");
+    }
+
+    const config = {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    };
+
+    isLoading.value = true;
+
+    const response = await axios.get("/statistics", config);
+    userData.value = response.data;
+  } catch (err) {
+    error.value = err.message;
+  } finally {
+    isLoading.value = false;
+  }
+};
+
+const userListMeta = computed(() => {
+  return [
+    {
+      icon: "tabler-users-group",
+      color: "Primary",
+      title: "Total Employee and Company Admins",
+      stats: userData.value ? userData.value.total_employees : "N/A",
+    },
+    {
+      icon: "tabler-building-estate",
+      color: "success",
+      title: "Total companies Under Us ",
+      stats: userData.value ? userData.value.total_companies : "N/A",
+    },
+    {
+      icon: "tabler-briefcase",
+      color: "warning",
+      title: "Numbers of Jobs",
+      stats: userData.value ? userData.value.total_jobs : "N/A",
+      subtitle: "Number of job opening currently active",
+    },
+  ];
+});
+
+onMounted(() => {
+  fetchData();
+});
+</script>
+
 <template>
   <div>
-    <VCard
-      class="mb-6"
-      title="Kick start your project 🚀"
-    >
-      <VCardText>All the best for your new project.</VCardText>
-      <VCardText>
-        Please make sure to read our <a
-          href="https://demos.pixinvent.com/vuexy-vuejs-admin-template/documentation/"
-          target="_blank"
-          rel="noopener noreferrer"
-          class="text-decoration-none"
+    <div>
+      <VRow>
+        <VCol
+          v-for="meta in userListMeta"
+          :key="meta.title"
+          cols="12"
+          sm="6"
+          lg="3"
         >
-          Template Documentation
-        </a> to understand where to go from here and how to use our template.
-      </VCardText>
-    </VCard>
+          <VCard class="fixed-height-card">
+            <VCardText class="d-flex justify-space-between">
+              <div>
+                <span>{{ meta.title }}</span>
+                <div class="d-flex align-center gap-2 my-1">
+                  <h6 class="text-h4">
+                    {{ meta.stats }}
+                  </h6>
+                </div>
+              </div>
 
-    <VCard title="Want to integrate JWT? 🔒">
-      <VCardText>We carefully crafted JWT flow so you can implement JWT with ease and with minimum efforts.</VCardText>
-      <VCardText>Please read our  JWT Documentation to get more out of JWT authentication.</VCardText>
-    </VCard>
+              <VAvatar
+                rounded
+                variant="tonal"
+                :color="meta.color"
+                :icon="meta.icon"
+              />
+            </VCardText>
+          </VCard>
+        </VCol>
+      </VRow>
+    </div>
   </div>
 </template>
+
+<style scoped>
+.fixed-height-card {
+  height: 120px;
+}
+</style>
