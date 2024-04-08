@@ -1,12 +1,12 @@
 <script setup>
 import { avatarText } from "@/@core/utils/formatters";
-// import AddNewCompanyDrawer from '@/views/apps/user/list/AddNewCompanyDrawer.vue'
+import AddNewCompanyDrawer from '@/views/AddNewCompanyDrawer.vue'
 import { onMounted, ref } from "vue";
 import { VDataTable } from "vuetify/labs/VDataTable";
 import axios from "../axiosFile.js";
 
 const deleteDialog = ref(false);
-// const isAddNewCompanyDrawerVisible = ref(false)
+const isAddNewCompanyDrawerVisible = ref(false)
 const editCompanyData = ref(null);
 const isEditMode = ref(false);
 const deleteItemId = ref(null);
