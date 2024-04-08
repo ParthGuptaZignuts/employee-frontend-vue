@@ -123,6 +123,12 @@ const deleteItemConfirm = async () => {
   }
 };
 
+const handleNewUserData = (userData) => {
+  userList.value.push(userData);
+  fetchData();
+  isAddNewCompanyDrawerVisible.value = false;
+}
+
 const fetchData = async () => {
   loading.value = true;
   try {
@@ -133,45 +139,11 @@ const fetchData = async () => {
         Authorization: `Bearer ${token}`,
       },
     };
-
     const response = await axios.get("/companies", config);
-
     userList.value = response.data.data;
     console.log(response.data.data);
   } catch (error) {
     console.error("Failed to fetch company data:", error.message);
-  }
-  loading.value = false;
-};
-
-const addNewUser = async (userData) => {
-  loading.value = true;
-  try {
-    const token = localStorage.getItem("token");
-
-    const config = {
-      headers: {
-        Authorization: `Bearer ${token}`,
-        "Content-Type": "multipart/form-data",
-      },
-    };
-    if (isEditMode.value) {
-      const response = await axios.post(
-        `/companies/update/${editCompanyData.value.id}`,
-        userData,
-        config
-      );
-
-      console.log("User updated successfully:", response.data);
-    } else {
-      const response = await axios.post("companies/create", userData, config);
-    }
-
-    fetchData();
-
-    isAddNewCompanyDrawerVisible.value = false;
-  } catch (error) {
-    console.error("Failed to update or create user:", error.message);
   }
   loading.value = false;
 };
@@ -193,6 +165,7 @@ onMounted(() => {
         </VBtn>
       </div>
       <VDataTable :headers="headers" :items="userList" :items-per-page="10">
+
         <template #item.name="{ item }">
           <div class="d-flex align-center">
             <VAvatar
@@ -248,6 +221,7 @@ onMounted(() => {
             </IconBtn>
           </div>
         </template>
+
       </VDataTable>
     </div>
     <VDialog v-model="deleteDialog" max-width="500px">
@@ -271,7 +245,7 @@ onMounted(() => {
     <AddNewCompanyDrawer
       v-model:isDrawerOpen="isAddNewCompanyDrawerVisible"
       :company-data="editCompanyData"
-      @user-data="addNewUser"
+      @user-data="handleNewUserData"
     />
   </div>
 </template>

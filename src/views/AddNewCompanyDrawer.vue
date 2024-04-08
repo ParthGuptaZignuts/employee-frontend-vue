@@ -1,133 +1,102 @@
 <script setup>
-import { defineProps, nextTick, ref } from "vue"
-import { PerfectScrollbar } from "vue3-perfect-scrollbar"
+import { ref, defineProps, defineEmits, nextTick } from 'vue'
+import { PerfectScrollbar } from 'vue3-perfect-scrollbar'
+import { emailValidator, requiredValidator } from '../@core/utils/validators'
+import axios from '@/axiosFile.js'
 
 const props = defineProps({
   isDrawerOpen: {
     type: Boolean,
     required: true,
   },
-  companyData: {
-    type: Object,
-    default: null,
-  },
 })
 
-const emit = defineEmits(["update:isDrawerOpen", "userData"])
-const statusOptions = ["Active", "Inactive"]
+const emit = defineEmits([
+  'update:isDrawerOpen',
+  'userData',
+])
+
 const isFormValid = ref(false)
 const refForm = ref()
 
-const CompanyName = ref("")
-const CompanyEmail = ref("")
-const Website = ref("https://")
-const LogoUrl = ref(null)
-const Location = ref("")
-const Status = ref("Active")
-const AdminFirstName = ref("")
-const AdminLastName = ref("")
-const AdminEmail = ref("")
-const Address = ref("")
-const City = ref("")
-const DOB = ref("")
-const AdminJoiningDate = ref("")
-const EmployeeNumber = ref("")
+const companyName = ref('')
+const companyEmail = ref('')
+const companyWebsite = ref('')
+const companyLogo = ref(null)
+const companyAddress = ref('')
+const companyStatus = ref('')
 
-const clearForm = () => {
-  // Reset all form data
-
-  refForm.value?.reset()
-  Website.value = "https://"
-  Status.value = "Active"
-  DOB.value = ""
-  AdminJoiningDate.value = ""
-  LogoUrl.value = null
-  refForm.value?.resetValidation()
-}
+const adminFirstName = ref('')
+const adminLastName = ref('')
+const adminEmail = ref('')
+const adminAddress = ref('')
+const adminCity = ref('')
+const adminDOB = ref(null)
+const adminJoiningDate = ref(null)
 
 const closeNavigationDrawer = () => {
-  emit("update:isDrawerOpen", false)
-  refForm.value?.resetValidation()
-  nextTick(clearForm)
+  emit('update:isDrawerOpen', false)
+  nextTick(() => {
+    refForm.value.reset()
+    refForm.value.resetValidation()
+  })
 }
 
-watch(
-  () => props.companyData,
-  newValue => {
-    if (newValue) {
-      CompanyName.value = newValue.name
-      CompanyEmail.value = newValue.company_email
-      Website.value = newValue.website
-      Location.value = newValue.location
-      Status.value = newValue.status === "A" ? "Active" : "Inactive"
-      AdminFirstName.value = newValue.company_admin.first_name
-      AdminLastName.value = newValue.company_admin.last_name
-
-      AdminEmail.value = newValue.company_admin.email
-      Address.value = newValue.company_admin.address
-      City.value = newValue.company_admin.city
-      DOB.value = newValue.company_admin.dob
-      AdminJoiningDate.value = newValue.company_admin.joining_date
-      EmployeeNumber.value = newValue.company_admin.emp_no
-    } else {
-      refForm.value?.resetValidation()
-      clearForm()
-    }
-  },
-)
-
-const onSubmit = async () => {
-  console.log("hii")
-  try {
-    let validation = await refForm.value?.validate()
-    console.log(validation)
-    if (validation.valid) {
-      const formData = new FormData()
-      if (LogoUrl.value && LogoUrl.value[0]) {
-        formData.append("logo", LogoUrl.value[0])
+const onSubmit = () => {
+  refForm.value.validate().then(({ valid }) => {
+    if (valid) {
+     const mappedStatus = companyStatus.value === 'Active' ? 'A' : 'I';
+      const userData = {
+        name: companyName.value,
+        email: companyEmail.value,
+        website: companyWebsite.value,
+        address: companyAddress.value,
+        status: mappedStatus,
+        admin: {
+          first_name: adminFirstName.value,
+          last_name: adminLastName.value,
+          email: adminEmail.value,
+          address: adminAddress.value,
+          city: adminCity.value,
+          dob: adminDOB.value,
+          joining_date: adminJoiningDate.value,
+        }
+      }
+      if (companyLogo.value) {
+        userData.companyLogo = companyLogo.value
       }
 
-      formData.append("name", CompanyName.value)
-      formData.append("company_email", CompanyEmail.value)
-      formData.append("website", Website.value)
-      formData.append("location", Location.value)
-      formData.append("status", Status.value === "Active" ? "A" : "I")
-      formData.append("admin[first_name]", AdminFirstName.value)
-      formData.append("admin[last_name]", AdminLastName.value)
-      formData.append("admin[address]", Address.value)
-      formData.append("admin[city]", City.value)
-      formData.append("admin[dob]", DOB.value)
-      formData.append("admin[joining_date]", AdminJoiningDate.value)
-      formData.append("admin[emp_no]", EmployeeNumber.value)
-
-      // Include AdminEmail for new companies
-      if (!props.companyData) {
-        formData.append("admin[email]", AdminEmail.value)
-      }
-
-      // Emit userData event with form data
-      emit("userData", formData)
-
-      // Reset form validation
-      refForm.value?.resetValidation()
-
-      // Close navigation drawer
-      closeNavigationDrawer()
-
-      // Reset form after submission (consider using a separate reset function)
-      nextTick(() => {
-        clearForm()
-      })
+      addNewUser(userData)
     }
-  } catch (error) {
-    console.error("Error during form validation:", error)
-  }
+  })
 }
-
 
 const handleDrawerModelValueUpdate = val => {
-  emit("update:isDrawerOpen", val)
+  emit('update:isDrawerOpen', val)
 }
+
+const addNewUser = async (userData) => {
+  try {
+    const token = localStorage.getItem("token");
+
+    const config = {
+      headers: {
+        Authorization: `Bearer ${token}`,
+        "Content-Type": "multipart/form-data",
+      },
+    };
+
+    const response = await axios.post("/companies/create", userData, config);
+    emit('userData', response.data);
+
+    // Close the drawer
+    closeNavigationDrawer();
+
+  } catch (error) {
+    console.error("Failed to create company:", error.message);
+  }
+};
+
 </script>
 
 <template>
@@ -140,154 +109,139 @@ const handleDrawerModelValueUpdate = val => {
     @update:model-value="handleDrawerModelValueUpdate"
   >
     <!-- 👉 Title -->
-    <AppDrawerHeaderSection
-      :title="props.companyData ? 'Edit Company' : 'Add Company'"
-      @cancel="closeNavigationDrawer"
-    />
+    <AppDrawerHeaderSection title="Add Company" @cancel="closeNavigationDrawer" />
 
     <PerfectScrollbar :options="{ wheelPropagation: false }">
       <VCard flat>
         <VCardText>
           <!-- 👉 Form -->
-          <VForm
-            ref="refForm"
-            v-model="isFormValid"
-            enctype="multipart/form-data"
-            @submit.prevent="onSubmit"
-          >
+          <VForm ref="refForm" v-model="isFormValid" @submit.prevent="onSubmit">
             <VRow>
-              <!-- 👉 Full name -->
+              <!-- 👉 Company Name -->
               <VCol cols="12">
                 <AppTextField
-                  v-model="CompanyName"
+                  v-model="companyName"
                   :rules="[requiredValidator]"
                   label="Company Name"
                 />
               </VCol>
+
+              <!-- 👉 Company Email -->
               <VCol cols="12">
                 <AppTextField
-                  v-model="CompanyEmail"
+                  v-model="companyEmail"
                   :rules="[requiredValidator, emailValidator]"
                   label="Company Email"
                 />
               </VCol>
 
-              <!-- 👉 Website -->
+              <!-- 👉 Company Website -->
               <VCol cols="12">
                 <AppTextField
-                  v-model="Website"
-                  :rules="[requiredValidator, urlValidator]"
-                  label="Website"
+                  v-model="companyWebsite"
+                  :rules="[requiredValidator]"
+                  label="Company Website"
                 />
               </VCol>
-              <!-- 👉 Logo URL -->
+
+              <!-- 👉 Company Logo -->
               <VCol cols="12">
                 <VFileInput
-                  v-model="LogoUrl"
+                  v-model="companyLogo"
                   label="Upload logo"
                   prepend-icon="tabler-camera"
                 />
               </VCol>
-              <!-- 👉 Location -->
+
+              <!-- 👉 Company Address -->
               <VCol cols="12">
                 <AppTextField
-                  v-model="Location"
-                  label="Location"
-                />
-              </VCol>
-              <VCol cols="12">
-                <VSelect
-                  v-model="Status"
-                  :items="statusOptions"
+                  v-model="companyAddress"
                   :rules="[requiredValidator]"
-                  label="Status"
+                  label="Company Address"
                 />
               </VCol>
 
-              <VDivider />
+              <!-- 👉 Company Status -->
+              <VCol cols="12">
+                <AppSelect
+                  v-model="companyStatus"
+                  label="Company Status"
+                  :rules="[requiredValidator]"
+                  :items="['Active', 'Inactive']"
+                />
+              </VCol>
+
               <!-- 👉 Admin First Name -->
               <VCol cols="12">
                 <AppTextField
-                  v-model="AdminFirstName"
+                  v-model="adminFirstName"
                   :rules="[requiredValidator]"
                   label="Admin First Name"
                 />
               </VCol>
+
               <!-- 👉 Admin Last Name -->
               <VCol cols="12">
                 <AppTextField
-                  v-model="AdminLastName"
+                  v-model="adminLastName"
                   :rules="[requiredValidator]"
                   label="Admin Last Name"
                 />
               </VCol>
+
               <!-- 👉 Admin Email -->
               <VCol cols="12">
                 <AppTextField
-                  v-model="AdminEmail"
-                  label="Admin Email"
+                  v-model="adminEmail"
                   :rules="[requiredValidator, emailValidator]"
-                  :disabled="props.companyData !== null"
+                  label="Admin Email"
                 />
               </VCol>
 
-              <!-- 👉 Address -->
+              <!-- 👉 Admin Address -->
               <VCol cols="12">
                 <AppTextField
-                  v-model="Address"
+                  v-model="adminAddress"
                   :rules="[requiredValidator]"
-                  label="Address"
+                  label="Admin Address"
                 />
               </VCol>
-              <!-- 👉 City -->
+
+              <!-- 👉 Admin City -->
               <VCol cols="12">
                 <AppTextField
-                  v-model="City"
+                  v-model="adminCity"
                   :rules="[requiredValidator]"
-                  label="City"
+                  label="Admin City"
                 />
               </VCol>
-              <!-- 👉 Date of Birth -->
+
+              <!-- 👉 Admin Date of Birth -->
               <VCol cols="12">
                 <AppDateTimePicker
-                  v-model="DOB"
+                  v-model="adminDOB"
                   placeholder="YYYY-MM-DD"
                   :config="{ dateFormat: 'Y-m-d', maxDate: new Date() }"
-                  label="
-                  date
-                  of
-                  Birth"
+                  label="Date of Birth"
                 />
               </VCol>
-              <VDivider />
+
+              <!-- 👉 Admin Joining Date -->
               <VCol cols="12">
                 <AppDateTimePicker
-                  v-model="AdminJoiningDate"
+                  v-model="adminJoiningDate"
                   placeholder="YYYY-MM-DD"
                   :config="{ dateFormat: 'Y-m-d', maxDate: new Date() }"
                   label="Admin Joining Date"
                 />
               </VCol>
-              <!-- 👉 Employee Number -->
-              <VCol
-                v-if="props.companyData !== null"
-                cols="12"
-              >
-                <AppTextField
-                  v-model="EmployeeNumber"
-                  label="Employee Number"
-                  disabled
-                />
-              </VCol>
+              <VDivider />
               <!-- 👉 Submit and Cancel -->
               <VCol cols="12">
+                <VBtn type="submit" class="me-3"> Submit </VBtn>
                 <VBtn
-                  type="submit"
-                  class="me-3"
-                >
-                  Submit
-                </VBtn>
-                <VBtn
+                  type="reset"
                   variant="tonal"
                   color="secondary"
                   @click="closeNavigationDrawer"
