@@ -175,12 +175,12 @@ onMounted(() => {
               :variant="!item.raw.avatar ? 'tonal' : undefined"
             >
               <VImg
-                v-if="item.raw.logo_url"
-                :src="`http://127.0.0.1:8000/storage/logos/${item.raw.logo_url}`"
+                v-if="item.raw.logo"
+                :src="`http://127.0.0.1:8000/storage/logos/${item.raw.logo}`"
               />
               <span v-else>{{ avatarText(item.raw.name) }}</span>
             </VAvatar>
-
+        
             <div class="d-flex flex-column ms-3">
               <span
                 class="d-block font-weight-medium text--primary text-truncate"
