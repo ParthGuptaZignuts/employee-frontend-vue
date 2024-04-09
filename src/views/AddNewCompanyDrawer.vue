@@ -42,6 +42,7 @@ const closeNavigationDrawer = () => {
   nextTick(() => {
     refForm.value.reset();
     resetFormValidation(); // Reset form validation state
+    resetFormFields(); // Reset form fields
   });
 };
 
@@ -70,9 +71,11 @@ const resetFormValidation = () => {
 
 const switchMode = (newMode) => {
   mode.value = newMode;
-  resetFormValidation(); 
-  if (newMode === "add") {
+  console.log(mode.value);
+  if (newMode == "add") {
     resetFormFields();
+    resetFormValidation();
+
   } else {
     companyName.value = props.companyData.name || "";
     companyEmail.value = props.companyData.email || "";
@@ -88,7 +91,6 @@ const switchMode = (newMode) => {
     adminJoiningDate.value = props.companyData.admin?.joining_date || null;
   }
 };
-
 const onSubmit = () => {
   refForm.value.validate().then(({ valid }) => {
     if (valid) {
