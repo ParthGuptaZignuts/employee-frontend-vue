@@ -1,51 +1,98 @@
 <script setup>
-import { ref, defineProps, defineEmits, nextTick } from 'vue'
-import { PerfectScrollbar } from 'vue3-perfect-scrollbar'
-import { emailValidator, requiredValidator } from '../@core/utils/validators'
-import axios from '@/axiosFile.js'
+import { ref, defineProps, defineEmits, nextTick, watch } from "vue";
+import { PerfectScrollbar } from "vue3-perfect-scrollbar";
+import { emailValidator, requiredValidator } from "../@core/utils/validators";
+import axios from "@/axiosFile.js";
 
 const props = defineProps({
   isDrawerOpen: {
     type: Boolean,
     required: true,
   },
-})
+  companyData: {
+    type: Object,
+    default: null,
+  },
+});
 
-const emit = defineEmits([
-  'update:isDrawerOpen',
-  'userData',
-])
+const emit = defineEmits(["update:isDrawerOpen", "userData"]);
 
-const isFormValid = ref(false)
-const refForm = ref()
+const isFormValid = ref(false);
+const refForm = ref();
 
-const companyName = ref('')
-const companyEmail = ref('')
-const companyWebsite = ref('')
-const companyLogo = ref('')
-const companyAddress = ref('')
-const companyStatus = ref('')
+const companyName = ref("");
+const companyEmail = ref("");
+const companyWebsite = ref("");
+const companyLogo = ref("");
+const companyAddress = ref("");
+const companyStatus = ref("");
 
-const adminFirstName = ref('')
-const adminLastName = ref('')
-const adminEmail = ref('')
-const adminAddress = ref('')
-const adminCity = ref('')
-const adminDOB = ref(null)
-const adminJoiningDate = ref(null)
+const adminFirstName = ref("");
+const adminLastName = ref("");
+const adminEmail = ref("");
+const adminAddress = ref("");
+const adminCity = ref("");
+const adminDOB = ref(null);
+const adminJoiningDate = ref(null);
+
+const mode = ref("add");
 
 const closeNavigationDrawer = () => {
-  emit('update:isDrawerOpen', false)
+  emit("update:isDrawerOpen", false);
   nextTick(() => {
-    refForm.value.reset()
-    refForm.value.resetValidation()
-  })
-}
+    refForm.value.reset();
+    resetFormValidation(); // Reset form validation state
+  });
+};
+
+const resetFormFields = () => {
+  companyName.value = "";
+  companyEmail.value = "";
+  companyWebsite.value = "";
+  companyLogo.value = "";
+  companyAddress.value = "";
+  companyStatus.value = "";
+  adminFirstName.value = "";
+  adminLastName.value = "";
+  adminEmail.value = "";
+  adminAddress.value = "";
+  adminCity.value = "";
+  adminDOB.value = null;
+  adminJoiningDate.value = null;
+};
+
+const resetFormValidation = () => {
+  isFormValid.value = true; // Reset validation state to true
+  if (refForm.value) {
+    refForm.value.resetValidation();
+  }
+};
+
+const switchMode = (newMode) => {
+  mode.value = newMode;
+  resetFormValidation(); 
+  if (newMode === "add") {
+    resetFormFields();
+  } else {
+    companyName.value = props.companyData.name || "";
+    companyEmail.value = props.companyData.email || "";
+    companyWebsite.value = props.companyData.website || "";
+    companyAddress.value = props.companyData.address || "";
+    companyStatus.value = props.companyData.status === "Active" ? "Active" : "Inactive";
+    adminFirstName.value = props.companyData.admin?.first_name || "";
+    adminLastName.value = props.companyData.admin?.last_name || "";
+    adminEmail.value = props.companyData.admin?.email || "";
+    adminAddress.value = props.companyData.admin?.address || "";
+    adminCity.value = props.companyData.admin?.city || "";
+    adminDOB.value = props.companyData.admin?.dob || null;
+    adminJoiningDate.value = props.companyData.admin?.joining_date || null;
+  }
+};
 
 const onSubmit = () => {
   refForm.value.validate().then(({ valid }) => {
     if (valid) {
-      const mappedStatus = companyStatus.value === 'Active' ? 'A' : 'I';
+      const mappedStatus = companyStatus.value === "Active" ? "A" : "I";
       const userData = {
         name: companyName.value,
         email: companyEmail.value,
@@ -61,16 +108,20 @@ const onSubmit = () => {
           dob: adminDOB.value,
           joining_date: adminJoiningDate.value,
         },
-        logo: companyLogo.value
+        logo: companyLogo.value,
+      };
+      if (props.companyData) {
+        editUser(userData);
+      } else {
+        addNewUser(userData);
       }
-      addNewUser(userData)
     }
-  })
-}
+  });
+};
 
-const handleDrawerModelValueUpdate = val => {
-  emit('update:isDrawerOpen', val)
-}
+const handleDrawerModelValueUpdate = (val) => {
+  emit("update:isDrawerOpen", val);
+};
 
 const handleFileUpload = (e) => {
   companyLogo.value = e.target.files[0];
@@ -81,20 +132,20 @@ const addNewUser = async (userData) => {
     const token = localStorage.getItem("token");
 
     const formData = new FormData();
-    formData.append('name', userData.name);
-    formData.append('email', userData.email);
-    formData.append('website', userData.website);
-    formData.append('address', userData.address);
-    formData.append('status', userData.status);
-    formData.append('admin[first_name]', userData.admin.first_name);
-    formData.append('admin[last_name]', userData.admin.last_name);
-    formData.append('admin[email]', userData.admin.email);
-    formData.append('admin[address]', userData.admin.address);
-    formData.append('admin[city]', userData.admin.city);
-    formData.append('admin[dob]', userData.admin.dob);
-    formData.append('admin[joining_date]', userData.admin.joining_date);
+    formData.append("name", userData.name);
+    formData.append("email", userData.email);
+    formData.append("website", userData.website);
+    formData.append("address", userData.address);
+    formData.append("status", userData.status);
+    formData.append("admin[first_name]", userData.admin.first_name);
+    formData.append("admin[last_name]", userData.admin.last_name);
+    formData.append("admin[email]", userData.admin.email);
+    formData.append("admin[address]", userData.admin.address);
+    formData.append("admin[city]", userData.admin.city);
+    formData.append("admin[dob]", userData.admin.dob);
+    formData.append("admin[joining_date]", userData.admin.joining_date);
     if (userData.logo) {
-      formData.append('logo', userData.logo);
+      formData.append("logo", userData.logo);
     }
 
     const config = {
@@ -105,18 +156,100 @@ const addNewUser = async (userData) => {
     };
 
     const response = await axios.post("/companies/create", formData, config);
-    emit('userData', response.data);
+    emit("userData", response.data);
 
     // Close the drawer
     closeNavigationDrawer();
-
   } catch (error) {
     console.error("Failed to create company:", error.message);
   }
 };
 
-</script>
+const editUser = async (userData) => {
+  try {
+    const token = localStorage.getItem("token");
+    const company_id = props.companyData.id;
 
+    const formData = new FormData();
+    formData.append("name", userData.name);
+    formData.append("email", userData.email);
+    formData.append("website", userData.website);
+    formData.append("address", userData.address);
+    formData.append("status", userData.status);
+    formData.append("admin[first_name]", userData.admin.first_name);
+    formData.append("admin[last_name]", userData.admin.last_name);
+    formData.append("admin[email]", userData.admin.email);
+    formData.append("admin[address]", userData.admin.address);
+    formData.append("admin[city]", userData.admin.city);
+    formData.append("admin[dob]", userData.admin.dob);
+    formData.append("admin[joining_date]", userData.admin.joining_date);
+    if (userData.logo) {
+      formData.append("logo", userData.logo);
+    }
+
+    const config = {
+      headers: {
+        Authorization: `Bearer ${token}`,
+        "Content-Type": "multipart/form-data",
+      },
+    };
+
+    const response = await axios.post(
+      `/companies/${company_id}`,
+      formData,
+      config
+    );
+    emit("userData", response.data);
+
+    closeNavigationDrawer();
+  } catch (error) {
+    console.error("Failed to update company:", error.message);
+  }
+};
+
+if (props.companyData) {
+  const { name, email, website, address, status, admin, logo } =
+    props.companyData;
+  companyName.value = name;
+  companyEmail.value = email;
+  companyWebsite.value = website;
+  companyAddress.value = address;
+  companyStatus.value = status === "Active" ? "Active" : "Inactive";
+  adminFirstName.value = admin.first_name;
+  adminLastName.value = admin.last_name;
+  adminEmail.value = admin.email;
+  adminAddress.value = admin.address;
+  adminCity.value = admin.city;
+  adminDOB.value = admin.dob;
+  adminJoiningDate.value = admin.joining_date;
+  mode.value = "edit";
+}
+
+watch(
+  () => props.companyData,
+  (newValue, oldValue) => {
+    if (newValue !== null) {
+      const { name, email, website, address, status, admin, logo } = newValue;
+      companyName.value = name;
+      companyEmail.value = email;
+      companyWebsite.value = website;
+      companyAddress.value = address;
+      companyStatus.value = status === "Active" ? "Active" : "Inactive";
+      adminFirstName.value = admin.first_name;
+      adminLastName.value = admin.last_name;
+      adminEmail.value = admin.email;
+      adminAddress.value = admin.address;
+      adminCity.value = admin.city;
+      adminDOB.value = admin.dob;
+      adminJoiningDate.value = admin.joining_date;
+      switchMode("edit");
+    } else {
+      switchMode("add");
+    }
+  },
+  { immediate: true }
+);
+</script>
 
 <template>
   <VNavigationDrawer
@@ -128,13 +261,21 @@ const addNewUser = async (userData) => {
     @update:model-value="handleDrawerModelValueUpdate"
   >
     <!-- 👉 Title -->
-    <AppDrawerHeaderSection title="Add Company" @cancel="closeNavigationDrawer" />
+    <AppDrawerHeaderSection
+      :title="mode === 'add' ? 'Add Company' : 'Edit Company'"
+      @cancel="closeNavigationDrawer"
+    />
 
     <PerfectScrollbar :options="{ wheelPropagation: false }">
       <VCard flat>
         <VCardText>
           <!-- 👉 Form -->
-          <VForm ref="refForm" v-model="isFormValid" @submit.prevent="onSubmit" enctype="multipart/form-data">
+          <VForm
+            ref="refForm"
+            v-model="isFormValid"
+            @submit.prevent="onSubmit"
+            enctype="multipart/form-data"
+          >
             <VRow>
               <!-- 👉 Company Name -->
               <VCol cols="12">
@@ -166,7 +307,7 @@ const addNewUser = async (userData) => {
               <!-- 👉 Company Logo -->
               <VCol cols="12">
                 <Input
-                type="file"
+                  type="file"
                   label="Upload logo"
                   prepend-icon="tabler-camera"
                   accept="image/*"
@@ -260,7 +401,9 @@ const addNewUser = async (userData) => {
               <VDivider />
               <!-- 👉 Submit and Cancel -->
               <VCol cols="12">
-                <VBtn type="submit" class="me-3"> Submit </VBtn>
+                <VBtn type="submit" class="me-3" >
+                  Submit
+                </VBtn>
                 <VBtn
                   type="reset"
                   variant="tonal"
