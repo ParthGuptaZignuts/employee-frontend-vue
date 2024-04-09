@@ -1,17 +1,18 @@
 <script setup>
 import { avatarText } from "@/@core/utils/formatters";
-import AddNewCompanyDrawer from '@/views/AddNewCompanyDrawer.vue'
+import AddNewCompanyDrawer from "@/views/AddNewCompanyDrawer.vue";
 import { onMounted, ref } from "vue";
 import { VDataTable } from "vuetify/labs/VDataTable";
 import axios from "../axiosFile.js";
 
 const deleteDialog = ref(false);
-const isAddNewCompanyDrawerVisible = ref(false)
+const isAddNewCompanyDrawerVisible = ref(false);
 const editCompanyData = ref(null);
 const isEditMode = ref(false);
 const deleteItemId = ref(null);
 const userList = ref([]);
 const permentDelete = ref(false);
+const tempDelete = ref(false);
 const loading = ref(false);
 
 // headers
@@ -92,6 +93,8 @@ const deleteItem = (item) => {
 
 const closeDelete = () => {
   deleteDialog.value = false;
+  permentDelete.value = false;
+  tempDelete.value = false;
 };
 
 const deleteItemConfirm = async () => {
@@ -109,14 +112,10 @@ const deleteItemConfirm = async () => {
       { forceDelete: permentDelete.value },
       config
     );
-
-    // Remove the company from the list
     userList.value = userList.value.filter(
       (company) => company.id !== deleteItemId.value
     );
     fetchData();
-
-    // Close the delete dialog
     closeDelete();
   } catch (error) {
     console.error("Failed to delete company:", error.message);
@@ -127,7 +126,7 @@ const handleNewUserData = (userData) => {
   userList.value.push(userData);
   fetchData();
   isAddNewCompanyDrawerVisible.value = false;
-}
+};
 
 const fetchData = async () => {
   loading.value = true;
@@ -148,6 +147,14 @@ const fetchData = async () => {
   loading.value = false;
 };
 
+const handleDeleteOptionChange = (option) => {
+    if (option === 'permanent') {
+      tempDelete.value = false;
+    } else if (option === 'temporary') {
+      permentDelete.value = false; 
+    }
+  };
+
 onMounted(() => {
   fetchData();
 });
@@ -165,7 +172,6 @@ onMounted(() => {
         </VBtn>
       </div>
       <VDataTable :headers="headers" :items="userList" :items-per-page="10">
-
         <template #item.name="{ item }">
           <div class="d-flex align-center">
             <VAvatar
@@ -180,7 +186,7 @@ onMounted(() => {
               />
               <span v-else>{{ avatarText(item.raw.name) }}</span>
             </VAvatar>
-        
+
             <div class="d-flex flex-column ms-3">
               <span
                 class="d-block font-weight-medium text--primary text-truncate"
@@ -221,14 +227,16 @@ onMounted(() => {
             </IconBtn>
           </div>
         </template>
-
       </VDataTable>
     </div>
     <VDialog v-model="deleteDialog" max-width="500px">
       <VCard>
-        <VCardTitle> Are you sure you want to delete this item? </VCardTitle>
-        <div class="demo-space-x">
-          <VCheckbox v-model="permentDelete" label="Delete Permanently" />
+        <VCardTitle class="text-center d-flex align-center justify-center mb-3"> Are you sure you want to delete this item? </VCardTitle>
+        <div class="text-center d-flex align-center justify-center mb-5">
+          <VCheckbox v-model="permentDelete" label="DELETE ITEM PERMANENTLY" name="del" @change="handleDeleteOptionChange('permanent')"/>
+        </div>
+        <div class="text-center d-flex align-center justify-center mb-5">
+          <VCheckbox v-model="tempDelete" label="DELETE ITEM TEMPORARILY" name="del" @change="handleDeleteOptionChange('temporary')"/>
         </div>
         <VCardActions>
           <VSpacer />
