@@ -72,10 +72,11 @@ const resetFormValidation = () => {
 const switchMode = (newMode) => {
   mode.value = newMode;
   console.log(mode.value);
-  if (newMode == "add") {
+  if (newMode === "add") {
     resetFormFields();
-    resetFormValidation();
-
+    nextTick(() => {
+      resetFormValidation(); // Reset form validation state
+    });
   } else {
     companyName.value = props.companyData.name || "";
     companyEmail.value = props.companyData.email || "";
@@ -91,6 +92,8 @@ const switchMode = (newMode) => {
     adminJoiningDate.value = props.companyData.admin?.joining_date || null;
   }
 };
+
+
 const onSubmit = () => {
   refForm.value.validate().then(({ valid }) => {
     if (valid) {
