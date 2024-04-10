@@ -4,6 +4,7 @@ import AddNewCompanyDrawer from "@/views/AddNewCompanyDrawer.vue";
 import { onMounted, ref } from "vue";
 import { VDataTable } from "vuetify/labs/VDataTable";
 import axios from "../axiosFile.js";
+import { computed } from 'vue';
 
 const deleteDialog = ref(false);
 const isAddNewCompanyDrawerVisible = ref(false);
@@ -97,28 +98,30 @@ const closeDelete = () => {
   tempDelete.value = false;
 };
 
+const isSubmitEnabled = computed(() => permentDelete.value || tempDelete.value);
+
 const deleteItemConfirm = async () => {
-  try {
-    const token = localStorage.getItem("token");
-
-    const config = {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    };
-
-    await axios.post(
-      `/companies/delete/${deleteItemId.value}`,
-      { forceDelete: permentDelete.value },
-      config
-    );
-    userList.value = userList.value.filter(
-      (company) => company.id !== deleteItemId.value
-    );
-    fetchData();
-    closeDelete();
-  } catch (error) {
-    console.error("Failed to delete company:", error.message);
+  if (isSubmitEnabled.value) {
+    try {
+      const token = localStorage.getItem("token");
+      const config = {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      };
+      await axios.post(
+        `/companies/delete/${deleteItemId.value}`,
+        { forceDelete: permentDelete.value },
+        config
+      );
+      userList.value = userList.value.filter(
+        (company) => company.id !== deleteItemId.value
+      );
+      fetchData();
+      closeDelete();
+    } catch (error) {
+      console.error("Failed to delete company:", error.message);
+    }
   }
 };
 
@@ -243,7 +246,7 @@ onMounted(() => {
           <VBtn color="error" variant="outlined" @click="closeDelete">
             Cancel
           </VBtn>
-          <VBtn color="success" variant="elevated" @click="deleteItemConfirm">
+          <VBtn color="success" variant="elevated" @click="deleteItemConfirm" :disabled="!isSubmitEnabled">
             OK
           </VBtn>
           <VSpacer />
