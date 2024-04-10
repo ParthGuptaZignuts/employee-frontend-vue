@@ -9,4 +9,9 @@ export default [
     to: { name: 'companies' },
     icon: { icon: 'tabler-layout-dashboard' },
   },
+  {
+    title: 'employees',
+    to: { name: 'employees' },
+    icon: { icon: 'tabler-users' },
+  }
 ]
