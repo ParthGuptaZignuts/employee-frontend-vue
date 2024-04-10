@@ -35,7 +35,13 @@ const userListMeta = computed(() => {
     {
       icon: "tabler-users-group",
       color: "Primary",
-      title: "Total Employee and Company Admins",
+      title: "Company Admins Associates with us",
+      stats: userData.value ? userData.value.total_ca : "N/A",
+    },
+    {
+      icon: "tabler-users-group",
+      color: "Primary",
+      title: "Total Employess Associates with us",
       stats: userData.value ? userData.value.total_employees : "N/A",
     },
     {
