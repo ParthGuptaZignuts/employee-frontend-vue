@@ -10,8 +10,13 @@ export default [
     icon: { icon: 'tabler-layout-dashboard' },
   },
   {
-    title: 'employees',
+    title: 'Employees',
     to: { name: 'employees' },
     icon: { icon: 'tabler-users' },
+  },
+  {
+    title: 'Jobs',
+    to: { name: 'jobs' },
+    icon: { icon: 'tabler-tie' },
   }
 ]

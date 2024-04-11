@@ -33,7 +33,7 @@ const fetchData = async () => {
 const userListMeta = computed(() => {
   return [
     {
-      icon: "tabler-users-group",
+      icon: "tabler-users",
       color: "Primary",
       title: "Company Admins Associates with us",
       stats: userData.value ? userData.value.total_ca : "N/A",
@@ -45,14 +45,14 @@ const userListMeta = computed(() => {
       stats: userData.value ? userData.value.total_employees : "N/A",
     },
     {
-      icon: "tabler-building-estate",
-      color: "success",
+      icon: "tabler-layout-dashboard",
+      color: "Primary",
       title: "Total companies Under Us ",
       stats: userData.value ? userData.value.total_companies : "N/A",
     },
     {
-      icon: "tabler-briefcase",
-      color: "warning",
+      icon: "tabler-tie",
+      color: "Primary",
       title: "Numbers of Jobs",
       stats: userData.value ? userData.value.total_jobs : "N/A",
       subtitle: "Number of job opening currently active",
