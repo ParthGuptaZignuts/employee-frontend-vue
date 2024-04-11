@@ -195,6 +195,3 @@ onMounted(fetchCompanyNames);
     </PerfectScrollbar>
   </VNavigationDrawer>
 </template>
-
-employment_type
-"message": "SQLSTATE[HY000]: General error: 1364 Field 'employment_type' doesn't have a default value (Connection: mysql, SQL: insert into `job_descriptions` (`title`, `salary`, `experience_required`, `company_id`, `updated_at`, `created_at`) values (Engineer, 20000, Low Level, 1, 2024-04-11 09:10:57, 2024-04-11 09:10:57))"
