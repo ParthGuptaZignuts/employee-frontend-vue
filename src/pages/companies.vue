@@ -4,7 +4,9 @@ import AddNewCompanyDrawer from "@/views/AddNewCompanyDrawer.vue";
 import { onMounted, ref } from "vue";
 import { VDataTable } from "vuetify/labs/VDataTable";
 import axios from "../axiosFile.js";
-import { computed } from 'vue';
+import { computed } from "vue";
+import { toast } from "vue3-toastify";
+import "vue3-toastify/dist/index.css";
 
 const deleteDialog = ref(false);
 const isAddNewCompanyDrawerVisible = ref(false);
@@ -119,17 +121,48 @@ const deleteItemConfirm = async () => {
       );
       fetchData();
       closeDelete();
+      toast("Company deleted successfully", {
+        theme: "auto",
+        type: "success",
+        pauseOnHover: false,
+        pauseOnFocusLoss: false,
+        dangerouslyHTMLString: true,
+      });
     } catch (error) {
       console.error("Failed to delete company:", error.message);
+      toast("Failed to delete company", {
+        theme: "auto",
+        type: "error",
+        pauseOnHover: false,
+        pauseOnFocusLoss: false,
+        dangerouslyHTMLString: true,
+      });
     }
   }
 };
-
 
 const handleNewUserData = (userData) => {
   userList.value.push(userData);
   fetchData();
   isAddNewCompanyDrawerVisible.value = false;
+
+  if (!editCompanyData.value) {
+    toast("Company created successfully", {
+      theme: "auto",
+      type: "success",
+      pauseOnHover: false,
+      pauseOnFocusLoss: false,
+      dangerouslyHTMLString: true,
+    });
+  } else {
+    toast("Company edited successfully", {
+      theme: "auto",
+      type: "success",
+      pauseOnHover: false,
+      pauseOnFocusLoss: false,
+      dangerouslyHTMLString: true,
+    });
+  }
 };
 
 const fetchData = async () => {
@@ -152,12 +185,12 @@ const fetchData = async () => {
 };
 
 const handleDeleteOptionChange = (option) => {
-    if (option === 'permanent') {
-      tempDelete.value = false;
-    } else if (option === 'temporary') {
-      permentDelete.value = false; 
-    }
-  };
+  if (option === "permanent") {
+    tempDelete.value = false;
+  } else if (option === "temporary") {
+    permentDelete.value = false;
+  }
+};
 
 onMounted(() => {
   fetchData();
@@ -235,19 +268,36 @@ onMounted(() => {
     </div>
     <VDialog v-model="deleteDialog" max-width="500px">
       <VCard>
-        <VCardTitle class="text-center d-flex align-center justify-center mb-3"> Are you sure you want to delete this item? </VCardTitle>
+        <VCardTitle class="text-center d-flex align-center justify-center mb-3">
+          Are you sure you want to delete this item?
+        </VCardTitle>
         <div class="text-center d-flex align-center justify-center mb-5">
-          <VCheckbox v-model="permentDelete" label="DELETE ITEM PERMANENTLY" name="del" @change="handleDeleteOptionChange('permanent')"/>
+          <VCheckbox
+            v-model="permentDelete"
+            label="DELETE ITEM PERMANENTLY"
+            name="del"
+            @change="handleDeleteOptionChange('permanent')"
+          />
         </div>
         <div class="text-center d-flex align-center justify-center mb-5">
-          <VCheckbox v-model="tempDelete" label="DELETE ITEM TEMPORARILY" name="del" @change="handleDeleteOptionChange('temporary')"/>
+          <VCheckbox
+            v-model="tempDelete"
+            label="DELETE ITEM TEMPORARILY"
+            name="del"
+            @change="handleDeleteOptionChange('temporary')"
+          />
         </div>
         <VCardActions>
           <VSpacer />
           <VBtn color="error" variant="outlined" @click="closeDelete">
             Cancel
           </VBtn>
-          <VBtn color="success" variant="elevated" @click="deleteItemConfirm" :disabled="!isSubmitEnabled">
+          <VBtn
+            color="success"
+            variant="elevated"
+            @click="deleteItemConfirm"
+            :disabled="!isSubmitEnabled"
+          >
             OK
           </VBtn>
           <VSpacer />
