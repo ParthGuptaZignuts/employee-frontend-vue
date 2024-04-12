@@ -111,7 +111,7 @@ const deleteItemConfirm = async () => {
       };
       await axios.post(
         `/companies/delete/${deleteItemId.value}`,
-        { forceDelete: permentDelete.value },
+        { force_delete: permentDelete.value },
         config
       );
       userList.value = userList.value.filter(
@@ -124,6 +124,7 @@ const deleteItemConfirm = async () => {
     }
   }
 };
+
 
 const handleNewUserData = (userData) => {
   userList.value.push(userData);

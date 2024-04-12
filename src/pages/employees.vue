@@ -118,10 +118,17 @@ const deleteItemConfirm = async () => {
           Authorization: `Bearer ${token}`,
         },
       };
-      await axios.delete(`/employee/${deleteItemId.value}`, config);
+
+      await axios.post(
+        `/employee/${deleteItemId.value}`,
+        { permanent_delete: permentDelete.value },
+        config
+      );
+
       userList.value = userList.value.filter(
         (employee) => employee.id !== deleteItemId.value
       );
+
       closeDelete();
     } catch (error) {
       console.error("Failed to delete employee:", error.message);
@@ -142,7 +149,11 @@ const handleNewUserData = async (employeeData) => {
     };
     console.log(isEditMode.value);
     if (isEditMode.value) {
-      let response = await axios.post(`/employee/${editCompanyData.value.id}`, employeeData, config);
+      let response = await axios.post(
+        `/employee/${editCompanyData.value.id}`,
+        employeeData,
+        config
+      );
       console.log("Employee updated successfully:", response.data);
     } else {
       let response = await axios.post("employee/create", employeeData, config);
@@ -158,7 +169,6 @@ const handleNewUserData = async (employeeData) => {
     loading.value = false;
   }
 };
-
 
 const fetchData = async () => {
   loading.value = true;

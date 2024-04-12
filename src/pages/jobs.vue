@@ -1,6 +1,6 @@
 <script setup>
 import { avatarText } from "@/@core/utils/formatters";
-import AddNewJobDrawer from '../views/AddNewJobDrawer.vue'
+import AddNewJobDrawer from "../views/AddNewJobDrawer.vue";
 import { onMounted, ref } from "vue";
 import { VDataTable } from "vuetify/labs/VDataTable";
 import axios from "../axiosFile.js";
@@ -53,7 +53,7 @@ const headers = [
 ];
 
 const openAddNewCompanyDrawer = async (employeeData) => {
-    console.log(employeeData);
+  console.log(employeeData);
   if (employeeData) {
     try {
       const token = localStorage.getItem("token");
@@ -92,6 +92,36 @@ const closeDelete = () => {
 
 const isSubmitEnabled = computed(() => permentDelete.value || tempDelete.value);
 
+
+// const deleteItemConfirm = async () => {
+//   if (isSubmitEnabled.value) {
+//     try {
+//       const token = localStorage.getItem("token");
+//       const config = {
+//         headers: {
+//           Authorization: `Bearer ${token}`,
+//         },
+//       };
+
+//       const params = {
+//         permanent_delete: permentDelete.value,
+//       };
+//       await axios.post(`/job/delete/${deleteItemId.value}`, {
+//         ...config,
+//         params,
+//       });
+
+//       userList.value = userList.value.filter(
+//         (employee) => employee.id !== deleteItemId.value
+//       );
+
+//       closeDelete();
+//     } catch (error) {
+//       console.error("Failed to delete employee:", error.message);
+//     }
+//   }
+// };
+
 const deleteItemConfirm = async () => {
   if (isSubmitEnabled.value) {
     try {
@@ -101,10 +131,21 @@ const deleteItemConfirm = async () => {
           Authorization: `Bearer ${token}`,
         },
       };
-      await axios.delete(`job/delete/${deleteItemId.value}`, config);
+
+      const params = {
+        permanent_delete: permentDelete.value,
+      };
+
+      // Update the delete request to include the token in the headers
+      await axios.post(`/job/delete/${deleteItemId.value}`, null, {
+        ...config,
+        params,
+      });
+
       userList.value = userList.value.filter(
         (employee) => employee.id !== deleteItemId.value
       );
+
       closeDelete();
     } catch (error) {
       console.error("Failed to delete employee:", error.message);
@@ -125,7 +166,11 @@ const handleNewUserData = async (employeeData) => {
     };
     console.log(isEditMode.value);
     if (isEditMode.value) {
-      let response = await axios.post(`/job/update/${editCompanyData.value.id}`, employeeData, config);
+      let response = await axios.post(
+        `/job/update/${editCompanyData.value.id}`,
+        employeeData,
+        config
+      );
       console.log("Employee updated successfully:", response.data);
     } else {
       let response = await axios.post("job/create", employeeData, config);
@@ -141,7 +186,6 @@ const handleNewUserData = async (employeeData) => {
     loading.value = false;
   }
 };
-
 
 const fetchData = async () => {
   loading.value = true;
@@ -289,8 +333,3 @@ onMounted(() => {
     />
   </div>
 </template>
-
-
-
-
-
