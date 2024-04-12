@@ -9,10 +9,12 @@ import authV2MaskLight from '@images/pages/misc-mask-light.png'
 import { useRouter } from 'vue-router'
 import { VForm } from 'vuetify/components/VForm'
 import axios from "../../axiosFile"
-import { validateEmail, validatePassword, validationRules } from '../../composables/useValidation.js'
+import { validationRules } from '../../composables/useValidation.js'
 
 const authThemeImg = useGenerateImageVariant(authV2LoginIllustrationLight, authV2LoginIllustrationDark, authV2LoginIllustrationBorderedLight, authV2LoginIllustrationBorderedDark, true)
 const authThemeMask = useGenerateImageVariant(authV2MaskLight, authV2MaskDark)
+
+const router = useRouter()
 const isPasswordVisible = ref(false)
 const refVForm = ref()
 const email = ref('')
@@ -20,49 +22,40 @@ const password = ref('')
 const confirmPassword = ref('')
 const errorMessage = ref('')
 const successMessage = ref('')
-const router = useRouter()
+
+const togglePasswordVisibility = () => {
+  isPasswordVisible.value = !isPasswordVisible.value
+}
+
+const validatePasswordMatch = () => {
+  return confirmPassword.value === password.value || 'Passwords do not match'
+}
 
 const handleSubmit = async () => {
   try {
-    const validate = await refVForm.value.validate();
-    if (!validate.valid) return; 
+    const validate = await refVForm.value.validate()
+    if (!validate.valid) return
 
-    if (password.value !== confirmPassword.value) {
-      errorMessage.value = "Passwords do not match";
-      return;
-    }
-
+    const token = window.location.pathname.split('/').pop() 
     const payload = {
       email: email.value,
+      token: token,
       password: password.value,
-      password_confirmation: confirmPassword.value
-    };
+      password_confirmation: confirmPassword.value,
+    }
+    console.log(payload);
+    const response = await axios.post('/password/reset', payload)
+    console.log(response.data);
+    successMessage.value = response.data.message
 
-    const response = await axios.post('/api/password/reset', payload);
-    successMessage.value = response.data.message;
-
-    // Redirect to login page after password reset
-    router.push('/login');
-
+    router.push('/login')
   } catch (error) {
-    console.error('API call failed:', error);
-    errorMessage.value = error.message;
+    console.error('API call failed:', error)
+    errorMessage.value = error.response.data.message || 'Failed to reset password'
   }
-};
-
-// Fetch the email from the API
-const fetchEmail = async () => {
-  try {
-    const response = await axios.get('password/reset');
-    email.value = response.data.email;
-    console.log(email.value);
-  } catch (error) {
-    console.error('Failed to fetch email:', error);
-  }
-};
-
-onMounted(fetchEmail);
+}
 </script>
+
 <template>
   <div>
     <VRow no-gutters class="auth-wrapper bg-surface">
@@ -80,11 +73,8 @@ onMounted(fetchEmail);
         </div>
       </VCol>
 
-      <VCol
-        cols="12"
-        lg="4"
-        class="auth-card-v2 d-flex align-center justify-center"
-      >
+      <!-- Form Column -->
+      <VCol cols="12" lg="4" class="auth-card-v2 d-flex align-center justify-center">
         <VCard flat :max-width="500" class="mt-12 mt-sm-0 pa-4">
           <VCardText>
             <h5 class="text-h5 mb-1">
@@ -93,23 +83,29 @@ onMounted(fetchEmail);
               👋🏻 
             </h5>
 
-            <h3 class="text-h3 mb-4">Welcome, {{ email }}</h3>
-
             <VAlert
               v-show="errorMessage"
-              color="primary"
-              variant="tonal"
+              color="error"
+              variant="outlined"
               dismissible
             >
-              <p class="text-caption mb-2">
-                {{ errorMessage }}
-              </p>
+              {{ errorMessage }}
+            </VAlert>
+
+            <VAlert
+              v-show="successMessage"
+              color="success"
+              variant="outlined"
+              dismissible
+            >
+              {{ successMessage }}
             </VAlert>
           </VCardText>
 
           <VCardText>
             <VForm ref="refVForm" @submit.prevent="handleSubmit">
               <VRow>
+                <!-- Email Field -->
                 <VCol cols="12">
                   <AppTextField
                     v-model="email"
@@ -121,21 +117,35 @@ onMounted(fetchEmail);
                   />
                 </VCol>
 
+                <!-- Password Field -->
                 <VCol cols="12">
                   <AppTextField
                     v-model="password"
                     label="Password"
                     :type="isPasswordVisible ? 'text' : 'password'"
                     :append-inner-icon="
-                      isPasswordVisible ? 'tabler-eye-off' : 'tabler-eye'
+                      isPasswordVisible ? 'mdi-eye-off' : 'mdi-eye'
                     "
                     :rules="validationRules.password"
                     required
-                    @click:append-inner="isPasswordVisible = !isPasswordVisible"
+                    @click:append-inner="togglePasswordVisibility"
                   />
+                </VCol>
 
-                  <VBtn block type="submit" class="mt-4"> Login </VBtn>
-                  
+                <!-- Confirm Password Field -->
+                <VCol cols="12">
+                  <AppTextField
+                    v-model="confirmPassword"
+                    label="Confirm Password"
+                    type="password"
+                    :rules="[validationRules.confirmPassword, validatePasswordMatch]"
+                    required
+                  />
+                </VCol>
+
+                <!-- Submit Button -->
+                <VCol cols="12">
+                  <VBtn block type="submit" class="mt-4"> Reset Password </VBtn>
                 </VCol>
               </VRow>
             </VForm>
