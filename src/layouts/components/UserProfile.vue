@@ -3,6 +3,8 @@ import avatar1 from '@images/avatars/avatar-1.png'
 import { useRouter } from 'vue-router'
 import axios from '../../axiosFile'
 import { ref } from 'vue'
+import { toast } from "vue3-toastify";
+import "vue3-toastify/dist/index.css";
 
 const router = useRouter()
 const userData = ref(null)
@@ -43,7 +45,16 @@ const handleLogout = async () => {
 
       if (response.status === 200) {
         localStorage.removeItem('token')
-        router.push('/login')
+        toast("Super Admin logout Successfully", {
+          theme: "auto",
+          type: "success",
+          pauseOnHover: false,
+          pauseOnFocusLoss: false,
+          dangerouslyHTMLString: true,
+        });
+        setTimeout(function() {
+          router.push('/login')
+        }, 3000);
       }
     } else {
       console.error('Token not found in localStorage')

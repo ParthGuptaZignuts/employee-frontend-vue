@@ -1,58 +1,86 @@
 <script setup>
-import { useGenerateImageVariant } from '@core/composable/useGenerateImageVariant'
-import authV2LoginIllustrationBorderedDark from '@images/pages/auth-v2-login-illustration-bordered-dark.png'
-import authV2LoginIllustrationBorderedLight from '@images/pages/auth-v2-login-illustration-bordered-light.png'
-import authV2LoginIllustrationDark from '@images/pages/auth-v2-login-illustration-dark.png'
-import authV2LoginIllustrationLight from '@images/pages/auth-v2-login-illustration-light.png'
-import authV2MaskDark from '@images/pages/misc-mask-dark.png'
-import authV2MaskLight from '@images/pages/misc-mask-light.png'
-import { useRouter } from 'vue-router'
-import { VForm } from 'vuetify/components/VForm'
-import axios from "../axiosFile"
-import { validateEmail, validatePassword, validationRules } from '../composables/useValidation.js'
+import { useGenerateImageVariant } from "@core/composable/useGenerateImageVariant";
+import authV2LoginIllustrationBorderedDark from "@images/pages/auth-v2-login-illustration-bordered-dark.png";
+import authV2LoginIllustrationBorderedLight from "@images/pages/auth-v2-login-illustration-bordered-light.png";
+import authV2LoginIllustrationDark from "@images/pages/auth-v2-login-illustration-dark.png";
+import authV2LoginIllustrationLight from "@images/pages/auth-v2-login-illustration-light.png";
+import authV2MaskDark from "@images/pages/misc-mask-dark.png";
+import authV2MaskLight from "@images/pages/misc-mask-light.png";
+import { useRouter } from "vue-router";
+import { VForm } from "vuetify/components/VForm";
+import axios from "../axiosFile";
+import {
+  validateEmail,
+  validatePassword,
+  validationRules,
+} from "../composables/useValidation.js";
+import { toast } from "vue3-toastify";
+import "vue3-toastify/dist/index.css";
 
-const authThemeImg = useGenerateImageVariant(authV2LoginIllustrationLight, authV2LoginIllustrationDark, authV2LoginIllustrationBorderedLight, authV2LoginIllustrationBorderedDark, true)
-const authThemeMask = useGenerateImageVariant(authV2MaskLight, authV2MaskDark)
-const isPasswordVisible = ref(false)
-const refVForm = ref()
-const email = ref('')
-const password = ref('')
-const errorMessage = ref('')
-
-
-const router = useRouter()
-
+const authThemeImg = useGenerateImageVariant(
+  authV2LoginIllustrationLight,
+  authV2LoginIllustrationDark,
+  authV2LoginIllustrationBorderedLight,
+  authV2LoginIllustrationBorderedDark,
+  true
+);
+const authThemeMask = useGenerateImageVariant(authV2MaskLight, authV2MaskDark);
+const isPasswordVisible = ref(false);
+const refVForm = ref();
+const email = ref("");
+const password = ref("");
+const errorMessage = ref("");
+const router = useRouter();
 
 const handleSubmit = async () => {
   try {
     const validate = await refVForm.value.validate();
 
-    if (!validate.valid) return; 
+    if (!validate.valid) return;
     const payload = {
       email: email.value,
       password: password.value,
     };
 
-    const response = await axios.post('/login', payload);
+    const response = await axios.post("/login", payload);
     console.log(response.data.data.user.type);
 
     if (response.data.data.user) {
-      if (response.data.data.user.type === 'SA') {
-        localStorage.setItem('token', response.data.data.token);
-        router.push('/');
+      if (response.data.data.user.type === "SA") {
+        localStorage.setItem("token", response.data.data.token);
+        toast("Super Admin login Successful", {
+          theme: "auto",
+          type: "success",
+          pauseOnHover: false,
+          pauseOnFocusLoss: false,
+          dangerouslyHTMLString: true,
+        });
+        setTimeout(function() {
+          router.push("/");
+        }, 3000);
       } else {
-        errorMessage.value = "Only superAdmin is allowed";
+        toast("Only superAdmin is allowed", {
+          theme: "auto",
+          type: "warning",
+          pauseOnHover: false,
+          pauseOnFocusLoss: false,
+          dangerouslyHTMLString: true,
+        });
       }
     } else {
-      errorMessage.value = "User data not found";
+      toast("User data not found", {
+        theme: "auto",
+        type: "warning",
+        pauseOnHover: false,
+        pauseOnFocusLoss: false,
+        dangerouslyHTMLString: true,
+      });
     }
-
   } catch (error) {
-    console.error('API call failed:', error);
+    console.error("API call failed:", error);
     errorMessage.value = error.message;
   }
 };
-
 </script>
 <template>
   <div>
@@ -128,7 +156,6 @@ const handleSubmit = async () => {
                   />
 
                   <VBtn block type="submit" class="mt-4"> Login </VBtn>
-                  
                 </VCol>
               </VRow>
             </VForm>
