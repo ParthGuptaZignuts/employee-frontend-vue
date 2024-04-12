@@ -93,35 +93,6 @@ const closeDelete = () => {
 const isSubmitEnabled = computed(() => permentDelete.value || tempDelete.value);
 
 
-// const deleteItemConfirm = async () => {
-//   if (isSubmitEnabled.value) {
-//     try {
-//       const token = localStorage.getItem("token");
-//       const config = {
-//         headers: {
-//           Authorization: `Bearer ${token}`,
-//         },
-//       };
-
-//       const params = {
-//         permanent_delete: permentDelete.value,
-//       };
-//       await axios.post(`/job/delete/${deleteItemId.value}`, {
-//         ...config,
-//         params,
-//       });
-
-//       userList.value = userList.value.filter(
-//         (employee) => employee.id !== deleteItemId.value
-//       );
-
-//       closeDelete();
-//     } catch (error) {
-//       console.error("Failed to delete employee:", error.message);
-//     }
-//   }
-// };
-
 const deleteItemConfirm = async () => {
   if (isSubmitEnabled.value) {
     try {
