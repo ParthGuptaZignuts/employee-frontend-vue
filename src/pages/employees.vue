@@ -150,7 +150,7 @@ const handleNewUserData = async (employeeData) => {
     console.log(isEditMode.value);
     if (isEditMode.value) {
       let response = await axios.post(
-        `/employee/${editCompanyData.value.id}`,
+        `/employee/update/${editCompanyData.value.id}`,
         employeeData,
         config
       );
