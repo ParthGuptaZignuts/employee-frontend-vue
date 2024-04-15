@@ -43,11 +43,10 @@ const handleSubmit = async () => {
     };
 
     const response = await axios.post("/login", payload);
-    console.log(response.data.data.user.type);
-
     if (response.data.data.user) {
       if (response.data.data.user.type === "SA") {
         localStorage.setItem("token", response.data.data.token);
+        localStorage.setItem("type","SA");
         toast("Super Admin login Successful", {
           theme: "auto",
           type: "success",
@@ -58,14 +57,20 @@ const handleSubmit = async () => {
         setTimeout(function() {
           router.push("/");
         }, 3000);
-      } else {
-        toast("Only superAdmin is allowed", {
+      } else if (response.data.data.user.type === "CA"){
+        localStorage.setItem("token", response.data.data.token);
+        localStorage.setItem("type","CA");
+        toast("Company Admin login Successful", {
           theme: "auto",
-          type: "warning",
+          type: "success",
           pauseOnHover: false,
           pauseOnFocusLoss: false,
           dangerouslyHTMLString: true,
         });
+        setTimeout(function() {
+          router.push("/");
+        }, 3000);
+
       }
     } else {
       toast("User data not found", {

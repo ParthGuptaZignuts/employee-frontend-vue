@@ -29,35 +29,55 @@ const fetchData = async () => {
     isLoading.value = false;
   }
 };
+const userType = localStorage.getItem("type");
+console.log(userType);
 
 const userListMeta = computed(() => {
-  return [
-    {
-      icon: "tabler-users",
-      color: "Primary",
-      title: "Company Admins Associates with us",
-      stats: userData.value ? userData.value.total_ca : "N/A",
-    },
-    {
-      icon: "tabler-users-group",
-      color: "Primary",
-      title: "Total Employess Associates with us",
-      stats: userData.value ? userData.value.total_employees : "N/A",
-    },
-    {
-      icon: "tabler-layout-dashboard",
-      color: "Primary",
-      title: "Total companies Under Us ",
-      stats: userData.value ? userData.value.total_companies : "N/A",
-    },
-    {
-      icon: "tabler-tie",
-      color: "Primary",
-      title: "Numbers of Jobs",
-      stats: userData.value ? userData.value.total_jobs : "N/A",
-      subtitle: "Number of job opening currently active",
-    },
-  ];
+  if (userType === "SA")
+    return [
+      {
+        icon: "tabler-users",
+        color: "Primary",
+        title: "Company Admins Associates with us",
+        stats: userData.value ? userData.value.total_ca : "N/A",
+      },
+      {
+        icon: "tabler-users-group",
+        color: "Primary",
+        title: "Total Employess Associates with us",
+        stats: userData.value ? userData.value.total_employees : "N/A",
+      },
+      {
+        icon: "tabler-layout-dashboard",
+        color: "Primary",
+        title: "Total companies Under Us ",
+        stats: userData.value ? userData.value.total_companies : "N/A",
+      },
+      {
+        icon: "tabler-tie",
+        color: "Primary",
+        title: "Numbers of Jobs",
+        stats: userData.value ? userData.value.total_jobs : "N/A",
+        subtitle: "Number of job opening currently active",
+      },
+    ];
+  if (userType === "CA") {
+    return [
+      {
+        icon: "tabler-users-group",
+        color: "Primary",
+        title: "Total Employess Associates with us",
+        stats: userData.value ? userData.value.total_employees : "N/A",
+      },
+      {
+        icon: "tabler-tie",
+        color: "Primary",
+        title: "Numbers of Jobs",
+        stats: userData.value ? userData.value.total_jobs : "N/A",
+        subtitle: "Number of job opening currently active",
+      },
+    ];
+  }
 });
 
 onMounted(() => {
