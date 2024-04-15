@@ -46,7 +46,7 @@ const handleSubmit = async () => {
     if (response.data.data.user) {
       if (response.data.data.user.type === "SA") {
         localStorage.setItem("token", response.data.data.token);
-        localStorage.setItem("type","SA");
+        localStorage.setItem("type", "SA");
         toast("Super Admin login Successful", {
           theme: "auto",
           type: "success",
@@ -54,12 +54,35 @@ const handleSubmit = async () => {
           pauseOnFocusLoss: false,
           dangerouslyHTMLString: true,
         });
-        setTimeout(function() {
+        setTimeout(function () {
           router.push("/");
-        }, 3000);
-      } else if (response.data.data.user.type === "CA"){
+        }, 2000);
+      } else if (response.data.data.user.type === "CA") {
         localStorage.setItem("token", response.data.data.token);
-        localStorage.setItem("type","CA");
+        localStorage.setItem("type", "CA");
+        // if (password.value === "password") {
+        //   toast("Please Set Your Password", {
+        //     theme: "auto",
+        //     type: "warning",
+        //     pauseOnHover: false,
+        //     pauseOnFocusLoss: false,
+        //     dangerouslyHTMLString: true,
+        //   });
+        //   setTimeout(function () {
+        //     router.push("/");
+        //   }, 3000);
+        // } else {
+        //   toast("Company Admin login Successful", {
+        //     theme: "auto",
+        //     type: "success",
+        //     pauseOnHover: false,
+        //     pauseOnFocusLoss: false,
+        //     dangerouslyHTMLString: true,
+        //   });
+        //   setTimeout(function () {
+        //     router.push("/");
+        //   }, 3000);
+        // }
         toast("Company Admin login Successful", {
           theme: "auto",
           type: "success",
@@ -67,10 +90,9 @@ const handleSubmit = async () => {
           pauseOnFocusLoss: false,
           dangerouslyHTMLString: true,
         });
-        setTimeout(function() {
+        setTimeout(function () {
           router.push("/");
-        }, 3000);
-
+        }, 2000);
       }
     } else {
       toast("User data not found", {
