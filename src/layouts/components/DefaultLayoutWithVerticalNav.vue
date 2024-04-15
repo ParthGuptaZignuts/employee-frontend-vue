@@ -1,5 +1,5 @@
 <script setup>
-import navItems from '@/navigation/vertical'
+import generateMenuItems from '@/navigation/vertical'
 import { useThemeConfig } from '@core/composable/useThemeConfig'
 
 // Components
@@ -12,6 +12,7 @@ import { VerticalNavLayout } from '@layouts'
 
 const { appRouteTransition, isLessThanOverlayNavBreakpoint } = useThemeConfig()
 const { width: windowWidth } = useWindowSize()
+const navItems = generateMenuItems();
 </script>
 
 <template>

@@ -1,5 +1,5 @@
 <script setup>
-import navItems from '@/navigation/horizontal'
+import generateMenuItems from '@/navigation/horizontal'
 import { useThemeConfig } from '@core/composable/useThemeConfig'
 import { themeConfig } from '@themeConfig'
 
@@ -11,6 +11,7 @@ import { HorizontalNavLayout } from '@layouts'
 import { VNodeRenderer } from '@layouts/components/VNodeRenderer'
 
 const { appRouteTransition } = useThemeConfig()
+const navItems = generateMenuItems();
 </script>
 
 <template>

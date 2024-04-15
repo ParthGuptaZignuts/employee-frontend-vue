@@ -30,7 +30,6 @@ const fetchData = async () => {
   }
 };
 const userType = localStorage.getItem("type");
-console.log(userType);
 
 const userListMeta = computed(() => {
   if (userType === "SA")
