@@ -5,6 +5,8 @@ import { onMounted, ref } from "vue";
 import { VDataTable } from "vuetify/labs/VDataTable";
 import axios from "../axiosFile.js";
 import { computed } from "vue";
+import { toast } from "vue3-toastify";
+import "vue3-toastify/dist/index.css";
 
 const deleteDialog = ref(false);
 const isAddNewCompanyDrawerVisible = ref(false);
@@ -130,8 +132,22 @@ const deleteItemConfirm = async () => {
       );
 
       closeDelete();
+      toast("Employee deleted successfully", {
+        theme: "auto",
+        type: "success",
+        pauseOnHover: false,
+        pauseOnFocusLoss: false,
+        dangerouslyHTMLString: true,
+      });
     } catch (error) {
       console.error("Failed to delete employee:", error.message);
+      toast("Failed to delete Employee", {
+        theme: "auto",
+        type: "error",
+        pauseOnHover: false,
+        pauseOnFocusLoss: false,
+        dangerouslyHTMLString: true,
+      });
     }
   }
 };
@@ -154,10 +170,23 @@ const handleNewUserData = async (employeeData) => {
         employeeData,
         config
       );
-      console.log("Employee updated successfully:", response.data);
+      toast("Employee Updated successfully", {
+      theme: "auto",
+      type: "success",
+      pauseOnHover: false,
+      pauseOnFocusLoss: false,
+      dangerouslyHTMLString: true,
+    });
     } else {
       let response = await axios.post("employee/create", employeeData, config);
-      console.log("Employee created successfully:", response.data);
+      toast("Employee Created Successfully", {
+      theme: "auto",
+      type: "success",
+      pauseOnHover: false,
+      pauseOnFocusLoss: false,
+      dangerouslyHTMLString: true,
+    });
+
     }
 
     fetchData();
