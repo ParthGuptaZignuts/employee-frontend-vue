@@ -3,6 +3,8 @@ import { emailValidator, requiredValidator } from "@validators";
 import { defineProps, defineEmits, onMounted, ref, watch, nextTick } from "vue";
 import { PerfectScrollbar } from "vue3-perfect-scrollbar";
 import axios from "../axiosFile";
+import { toast } from "vue3-toastify";
+import "vue3-toastify/dist/index.css";
 
 const props = defineProps({
   isEmployeeDrawerOpen: {
@@ -85,6 +87,16 @@ const onSubmit = async () => {
   try {
     let validate = await refForm.value?.validate();
     if (validate.valid) {
+      if (new Date(JoiningDate.value) < new Date(DOB.value)) {
+        toast("Joining Date cannot be before Date of Birth", {
+        theme: "auto",
+        type: "error",
+        pauseOnHover: false,
+        pauseOnFocusLoss: false,
+        dangerouslyHTMLString: true,
+      });
+        return;
+      }
       const formData = {
         first_name: FirstName.value,
         last_name: LastName.value,

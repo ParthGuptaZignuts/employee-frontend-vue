@@ -4,6 +4,8 @@ import { requiredValidator, emailValidator } from "@validators";
 import { defineProps, defineEmits, onMounted, ref, watch, nextTick } from "vue";
 import { PerfectScrollbar } from "vue3-perfect-scrollbar";
 import axios from "../axiosFile";
+import { toast } from "vue3-toastify";
+import "vue3-toastify/dist/index.css";
 
 // Define props and emits
 const props = defineProps({
@@ -29,6 +31,7 @@ const ExperienceRequired = ref("");
 const PostedOn = ref(null);
 const ExpiresOn = ref(null);
 const CompanyId = ref(null);
+const skillsRequired = ref([]);
 
 // Function to fetch company names from API
 const fetchCompanyNames = async () => {
@@ -52,6 +55,7 @@ const clearForm = () => {
   refForm.value?.reset();
   PostedOn.value = "";
   ExpiresOn.value = "";
+  skillsRequired.value = [];
   refForm.value?.resetValidation();
 };
 
@@ -67,18 +71,53 @@ watch(
       PostedOn.value = newValue.posted_date;
       ExpiresOn.value = newValue.expiry_date;
       CompanyId.value = newValue.company_id;
+      skillsRequired.value = newValue.skills_required ? newValue.skills_required.split(',').map(skill => skill.trim()) : [];
     } else {
       CompanyId.value = null;
       clearForm();
     }
   }
 );
+const skillsOptions = [
+  { label: 'MERN', value: 'MERN' },
+  { label: 'MEAN', value: 'MEAN' },
+  { label: 'LARAVEL+VUE', value: 'LARAVEL+VUE' },
+  { label: 'FLUTTER',value : 'FLUTTER'},
+  { label: 'DEVOPS',value : 'DEVOPS'},
+  { label: 'UI / UX',value : 'UI / UX'},
+  { label: 'ANDROID',value : 'ANDROID'},
+  { label: 'SALESFORCE',value : 'SALESFORCE'},
+  { label: 'REACT.JS',value : 'REACT.JS'},
+  { label: 'NODE.JS',value : 'NODE.JS'},
+  { label: 'AWS',value : 'AWS'},
+  { label: 'DBA',value : 'DBA'},
+];
 
 // Function to handle form submission
 const onSubmit = async () => {
   try {
     let validate = await refForm.value?.validate();
     if (validate.valid) {
+      if(new Date(ExpiresOn.value) < new Date(PostedOn.value)) {
+        toast("Joining Date cannot be before Date of Birth", {
+        theme: "auto",
+        type: "error",
+        pauseOnHover: false,
+        pauseOnFocusLoss: false,
+        dangerouslyHTMLString: true,
+      });
+      return ; 
+      }
+      if(Salary.value > 1000000){
+        toast("Enter the Valid value for Salary", {
+        theme: "auto",
+        type: "error",
+        pauseOnHover: false,
+        pauseOnFocusLoss: false,
+        dangerouslyHTMLString: true,
+      });
+      return ; 
+      }
       const formData = {
         title: Title.value,
         salary: Salary.value,
@@ -87,7 +126,9 @@ const onSubmit = async () => {
         posted_date: PostedOn.value,
         expiry_date: ExpiresOn.value,
         company_id: CompanyId.value,
+        skills_required: skillsRequired.value.join(", "),
       };
+      console.log(formData);
       emit("employeeData", formData);
     }
     closeNavigationDrawer();
@@ -137,7 +178,7 @@ onMounted(fetchCompanyNames);
 
               <!-- Salary -->
               <VCol cols="12">
-                <AppTextField v-model="Salary" type="number" label="Salary" />
+                <AppTextField v-model="Salary" type="number" label="Salary" placeholder="Salary Valid Upto 1000000"/>
               </VCol>
 
               <!-- Employment Status -->
@@ -154,10 +195,26 @@ onMounted(fetchCompanyNames);
               <VCol cols="12">
                 <AppSelect
                   v-model="ExperienceRequired"
-                  :items="['Low Level', 'Medium Level', 'High Level', ]"
+                  :items="['Low Level (0 to 1 Yrs) ', 'Medium Level (2 TO 5 Yrs)', 'High Level (5+ Yrs)', ]"
                   label="Experience Required"
                   placeholder="Experience Required"
                 />
+              </VCol>
+              
+              <!-- skills required -->
+              <VCol cols="12">
+                <label for="skillsRequired" class="skills-margin">Skills Required</label>
+                <div id="skillsRequired" class="skills-grid">
+                  <!-- List of checkboxes for skills -->
+                  <div v-for="skill in skillsOptions" :key="skill.value" class="skills-checkbox">
+                    <VCheckbox
+                      v-model="skillsRequired"
+                      :value="skill.value"
+                      :label="skill.label"
+                      :id="skill.value"
+                    ></VCheckbox>
+                  </div>
+                </div>
               </VCol>
 
               <!-- Posted On -->
@@ -195,3 +252,24 @@ onMounted(fetchCompanyNames);
     </PerfectScrollbar>
   </VNavigationDrawer>
 </template>
+
+<style>
+.skills-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+}
+
+.skills-checkbox {
+  display: flex;
+  align-items: center;
+}
+
+.skills-checkbox input {
+  margin-right: 5px;
+}
+
+.skills-margin {
+  margin-bottom: 10px;
+}
+</style>

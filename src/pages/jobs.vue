@@ -37,6 +37,10 @@ const headers = [
     key: "experience_required",
   },
   {
+    title:"Skills Required",
+    key: "skills_required"
+  },
+  {
     title: "Posted On",
     key: "posted_date",
   },

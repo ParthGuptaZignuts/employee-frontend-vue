@@ -82,7 +82,8 @@ const switchMode = (newMode) => {
     companyEmail.value = props.companyData.email || "";
     companyWebsite.value = props.companyData.website || "";
     companyAddress.value = props.companyData.address || "";
-    companyStatus.value = props.companyData.status === "Active" ? "Active" : "Inactive";
+    companyStatus.value =
+      props.companyData.status === "Active" ? "Active" : "Inactive";
     adminFirstName.value = props.companyData.admin?.first_name || "";
     adminLastName.value = props.companyData.admin?.last_name || "";
     adminEmail.value = props.companyData.admin?.email || "";
@@ -93,10 +94,19 @@ const switchMode = (newMode) => {
   }
 };
 
-
 const onSubmit = () => {
   refForm.value.validate().then(({ valid }) => {
     if (valid) {
+      if (new Date(adminJoiningDate.value) < new Date(adminDOB.value)) {
+        toast("Joining Date cannot be before Date of Birth", {
+        theme: "auto",
+        type: "error",
+        pauseOnHover: false,
+        pauseOnFocusLoss: false,
+        dangerouslyHTMLString: true,
+      });
+        return;
+      }
       const mappedStatus = companyStatus.value === "Active" ? "A" : "I";
       const userData = {
         name: companyName.value,
@@ -406,9 +416,7 @@ watch(
               <VDivider />
               <!-- 👉 Submit and Cancel -->
               <VCol cols="12">
-                <VBtn type="submit" class="me-3" >
-                  Submit
-                </VBtn>
+                <VBtn type="submit" class="me-3"> Submit </VBtn>
                 <VBtn
                   type="reset"
                   variant="tonal"
