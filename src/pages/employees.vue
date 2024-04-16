@@ -7,6 +7,7 @@ import axios from "../axiosFile.js";
 import { computed } from "vue";
 import { toast } from "vue3-toastify";
 import "vue3-toastify/dist/index.css";
+import { debounce } from "lodash";
 
 const deleteDialog = ref(false);
 const isAddNewCompanyDrawerVisible = ref(false);
@@ -17,7 +18,7 @@ const userList = ref([]);
 const permentDelete = ref(false);
 const tempDelete = ref(false);
 const loading = ref(false);
-
+const search = ref("");
 // headers
 const headers = [
   {
@@ -171,22 +172,21 @@ const handleNewUserData = async (employeeData) => {
         config
       );
       toast("Employee Updated successfully", {
-      theme: "auto",
-      type: "success",
-      pauseOnHover: false,
-      pauseOnFocusLoss: false,
-      dangerouslyHTMLString: true,
-    });
+        theme: "auto",
+        type: "success",
+        pauseOnHover: false,
+        pauseOnFocusLoss: false,
+        dangerouslyHTMLString: true,
+      });
     } else {
       let response = await axios.post("employee/create", employeeData, config);
       toast("Employee Created Successfully", {
-      theme: "auto",
-      type: "success",
-      pauseOnHover: false,
-      pauseOnFocusLoss: false,
-      dangerouslyHTMLString: true,
-    });
-
+        theme: "auto",
+        type: "success",
+        pauseOnHover: false,
+        pauseOnFocusLoss: false,
+        dangerouslyHTMLString: true,
+      });
     }
 
     fetchData();
@@ -225,6 +225,34 @@ const handleDeleteOptionChange = (option) => {
   }
 };
 
+const debouncedSearch = debounce(() => {
+  console.log("Searching for:", search.value);
+}, 500);
+
+watch(search, () => {
+  debouncedSearch();
+});
+
+watch(search, async (newValue, oldValue) => {
+  // Only send a request if the search term has changed
+  if (newValue !== oldValue) {
+    try {
+      const token = localStorage.getItem("token");
+
+      const config = {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      };
+
+      const response = await axios.get(`/employees?search=${newValue}`, config);
+      userList.value = response.data.data;
+    } catch (error) {
+      console.error("Failed to fetch company data:", error.message);
+    }
+  }
+});
+
 onMounted(() => {
   fetchData();
 });
@@ -241,6 +269,18 @@ onMounted(() => {
           Add New Employee
         </VBtn>
       </div>
+
+      <div class="search-container">
+        <VTextField
+          v-model="search"
+          label="Search"
+          outlined
+          dense
+          clearable
+          placeholder="Search Employee by Name"
+        />
+      </div>
+
       <VDataTable :headers="headers" :items="userList" :items-per-page="10">
         <template #item.name="{ item }">
           <div class="d-flex align-center">
@@ -344,3 +384,11 @@ onMounted(() => {
     />
   </div>
 </template>
+<style scoped>
+.search-container {
+  margin-bottom: 20px;
+}
+.v-text-field {
+  width: 100%;
+}
+</style>
