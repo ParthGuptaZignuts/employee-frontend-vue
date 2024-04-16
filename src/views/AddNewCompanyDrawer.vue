@@ -3,6 +3,8 @@ import { ref, defineProps, defineEmits, nextTick, watch } from "vue";
 import { PerfectScrollbar } from "vue3-perfect-scrollbar";
 import { emailValidator, requiredValidator } from "../@core/utils/validators";
 import axios from "@/axiosFile.js";
+import { toast } from "vue3-toastify";
+import "vue3-toastify/dist/index.css";
 
 const props = defineProps({
   isDrawerOpen: {
@@ -94,17 +96,18 @@ const switchMode = (newMode) => {
   }
 };
 
+
 const onSubmit = () => {
   refForm.value.validate().then(({ valid }) => {
     if (valid) {
       if (new Date(adminJoiningDate.value) < new Date(adminDOB.value)) {
         toast("Joining Date cannot be before Date of Birth", {
-        theme: "auto",
-        type: "error",
-        pauseOnHover: false,
-        pauseOnFocusLoss: false,
-        dangerouslyHTMLString: true,
-      });
+          theme: "auto",
+          type: "error",
+          pauseOnHover: false,
+          pauseOnFocusLoss: false,
+          dangerouslyHTMLString: true,
+        });
         return;
       }
       const mappedStatus = companyStatus.value === "Active" ? "A" : "I";
@@ -130,9 +133,19 @@ const onSubmit = () => {
       } else {
         addNewUser(userData);
       }
+      closeNavigationDrawer();
+      setTimeout(()=>{
+        nextTick(() => {
+        resetFormFields(); // Reset form fields
+        resetFormValidation(); // Reset form validation state
+      });
+      },500);
+     
     }
   });
 };
+
+
 
 const handleDrawerModelValueUpdate = (val) => {
   emit("update:isDrawerOpen", val);
