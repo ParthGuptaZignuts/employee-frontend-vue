@@ -73,7 +73,6 @@ const resetFormValidation = () => {
 
 const switchMode = (newMode) => {
   mode.value = newMode;
-  console.log(mode.value);
   if (newMode === "add") {
     resetFormFields();
     nextTick(() => {
@@ -136,8 +135,8 @@ const onSubmit = () => {
       closeNavigationDrawer();
       setTimeout(()=>{
         nextTick(() => {
-        resetFormFields(); // Reset form fields
-        resetFormValidation(); // Reset form validation state
+        resetFormFields();
+        resetFormValidation();
       });
       },500);
      
@@ -185,8 +184,6 @@ const addNewUser = async (userData) => {
 
     const response = await axios.post("/companies/create", formData, config);
     emit("userData", response.data);
-
-    // Close the drawer
     closeNavigationDrawer();
   } catch (error) {
     console.error("Failed to create company:", error.message);
@@ -197,7 +194,6 @@ const editUser = async (userData) => {
   try {
     const token = localStorage.getItem("token");
     const company_id = props.companyData.id;
-
     const formData = new FormData();
     formData.append("name", userData.name);
     formData.append("email", userData.email);
@@ -237,7 +233,7 @@ const editUser = async (userData) => {
 
 if (props.companyData) {
   const { name, email, website, address, status, admin, logo } =
-    props.companyData;
+  props.companyData;
   companyName.value = name;
   companyEmail.value = email;
   companyWebsite.value = website;
