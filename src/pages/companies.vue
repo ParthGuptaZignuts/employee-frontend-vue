@@ -19,7 +19,11 @@ const permentDelete = ref(false);
 const tempDelete = ref(false);
 const loading = ref(false);
 const search = ref("");
-
+const items = [
+  'Active Companies',
+  'In-Active Companies',
+]
+const selectedFilter = ref(null);
 // headers
 const headers = [
   {
@@ -222,6 +226,36 @@ watch(search, async (newValue, oldValue) => {
   }
 });
 
+watch(selectedFilter, async (newValue, oldValue) => {
+  if (newValue !== oldValue) {
+    try {
+      const token = localStorage.getItem("token");
+
+      const config = {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      };
+
+      let status;
+      console.log(newValue);
+      if (newValue === "Active Companies") {
+        status = "A";
+      } else if (newValue === "In-Active Companies") {
+        status = "I";
+      }
+
+      console.log(`/companies?status=${status}`);
+      const response = await axios.get(`/companies?status=${status}`, config);
+      userList.value = response.data.data;
+    } catch (error) {
+      console.error("Failed to fetch company data:", error.message);
+    }
+  }
+});
+
+
+
 onMounted(() => {
   fetchData();
 });
@@ -239,15 +273,27 @@ onMounted(() => {
         </VBtn>
       </div>
 
-      <div class="search-container">
-        <VTextField
-          v-model="search"
-          label="Search"
-          outlined
-          dense
-          clearable
-          placeholder="Search Company by Name"
-        />
+      <div class="search-container d-flex align-center">
+        <div class="search-input" style="width: 70%;">
+          <VTextField
+            v-model="search"
+            label="Search"
+            outlined
+            dense
+            clearable
+            placeholder="Search Company by Name"
+          />
+        </div>
+        <div class="filter-select" style="width: 30%;">
+          <AppSelect
+          v-model="selectedFilter"
+            :items="items"
+            clearable
+            clear-icon="tabler-x"
+            single-line
+            placeholder="show All Companies"
+          />
+        </div>
       </div>
 
       <VDataTable :headers="headers" :items="userList" :items-per-page="10">
@@ -356,8 +402,21 @@ onMounted(() => {
 </template>
 <style scoped>
 .search-container {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
   margin-bottom: 20px;
 }
+
+.search-input {
+  width: 70%;
+  margin-right: 10px;
+}
+
+.filter-select {
+  width: 30%;
+}
+
 .v-text-field {
   width: 100%;
 }
