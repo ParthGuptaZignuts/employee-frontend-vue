@@ -71,26 +71,40 @@ watch(
       PostedOn.value = newValue.posted_date;
       ExpiresOn.value = newValue.expiry_date;
       CompanyId.value = newValue.company_id;
-      skillsRequired.value = newValue.skills_required ? newValue.skills_required.split(',').map(skill => skill.trim()) : [];
+      skillsRequired.value = newValue.skills_required
+        ? newValue.skills_required.split(",").map((skill) => skill.trim())
+        : [];
     } else {
       CompanyId.value = null;
       clearForm();
     }
   }
 );
+watch(
+  () => skillsRequired.value,
+  (newValue) => {
+    if (newValue.includes("No Specific Skills Required") && newValue.length > 1) {
+      skillsRequired.value = newValue.filter(skill => skill !== "No Specific Skills Required");
+    }
+  }
+);
 const skillsOptions = [
-  { label: 'MERN', value: 'MERN' },
-  { label: 'MEAN', value: 'MEAN' },
-  { label: 'LARAVEL+VUE', value: 'LARAVEL+VUE' },
-  { label: 'FLUTTER',value : 'FLUTTER'},
-  { label: 'DEVOPS',value : 'DEVOPS'},
-  { label: 'UI / UX',value : 'UI / UX'},
-  { label: 'ANDROID',value : 'ANDROID'},
-  { label: 'SALESFORCE',value : 'SALESFORCE'},
-  { label: 'REACT.JS',value : 'REACT.JS'},
-  { label: 'NODE.JS',value : 'NODE.JS'},
-  { label: 'AWS',value : 'AWS'},
-  { label: 'DBA',value : 'DBA'},
+  { label: "MERN", value: "MERN" },
+  { label: "MEAN", value: "MEAN" },
+  { label: "LARAVEL+VUE", value: "LARAVEL+VUE" },
+  { label: "FLUTTER", value: "FLUTTER" },
+  { label: "DEVOPS", value: "DEVOPS" },
+  { label: "UI / UX", value: "UI / UX" },
+  { label: "ANDROID", value: "ANDROID" },
+  { label: "SALESFORCE", value: "SALESFORCE" },
+  { label: "REACT.JS", value: "REACT.JS" },
+  { label: "NODE.JS", value: "NODE.JS" },
+  { label: "AWS", value: "AWS" },
+  { label: "DBA", value: "DBA" },
+  {
+    label: "No Specific Skills Required",
+    value: "No Specific Skills Required",
+  },
 ];
 
 // Function to handle form submission
@@ -98,25 +112,35 @@ const onSubmit = async () => {
   try {
     let validate = await refForm.value?.validate();
     if (validate.valid) {
-      if(new Date(ExpiresOn.value) < new Date(PostedOn.value)) {
+      if (new Date(ExpiresOn.value) < new Date(PostedOn.value)) {
         toast("Joining Date cannot be before Date of Birth", {
-        theme: "auto",
-        type: "error",
-        pauseOnHover: false,
-        pauseOnFocusLoss: false,
-        dangerouslyHTMLString: true,
-      });
-      return ; 
+          theme: "auto",
+          type: "error",
+          pauseOnHover: false,
+          pauseOnFocusLoss: false,
+          dangerouslyHTMLString: true,
+        });
+        return;
       }
-      if(Salary.value > 1000000){
+      if (Salary.value > 1000000) {
         toast("Enter the Valid value for Salary", {
-        theme: "auto",
-        type: "error",
-        pauseOnHover: false,
-        pauseOnFocusLoss: false,
-        dangerouslyHTMLString: true,
-      });
-      return ; 
+          theme: "auto",
+          type: "error",
+          pauseOnHover: false,
+          pauseOnFocusLoss: false,
+          dangerouslyHTMLString: true,
+        });
+        return;
+      }
+      if (skillsRequired.value.length === 0) {
+        toast("Please select at least one skill", {
+          theme: "auto",
+          type: "error",
+          pauseOnHover: false,
+          pauseOnFocusLoss: false,
+          dangerouslyHTMLString: true,
+        });
+        return;
       }
       const formData = {
         title: Title.value,
@@ -148,7 +172,6 @@ const closeNavigationDrawer = () => {
 
 // Fetch company names from API on component mount
 onMounted(fetchCompanyNames);
-
 </script>
 
 <template>
@@ -173,19 +196,35 @@ onMounted(fetchCompanyNames);
             <VRow>
               <!-- Title -->
               <VCol cols="12">
-                <AppTextField v-model="Title" :rules="[requiredValidator]" label="Title" />
+                <AppTextField
+                  v-model="Title"
+                  :rules="[requiredValidator]"
+                  label="Title"
+                />
               </VCol>
 
               <!-- Salary -->
               <VCol cols="12">
-                <AppTextField v-model="Salary" type="number" label="Salary" placeholder="Salary Valid Upto 1000000"/>
+                <AppTextField
+                  v-model="Salary"
+                  type="number"
+                  label="Salary"
+                  placeholder="Salary Valid Upto 1000000"
+                />
               </VCol>
 
               <!-- Employment Status -->
               <VCol cols="12">
                 <AppSelect
                   v-model="EmploymentStatus"
-                  :items="['Full time', 'Part time','Hybrid', 'Work from Home', 'Work From Office', 'Internship']"
+                  :items="[
+                    'Full time',
+                    'Part time',
+                    'Hybrid',
+                    'Work from Home',
+                    'Work From Office',
+                    'Internship',
+                  ]"
                   label="Employment Status"
                   placeholder="Employment Status"
                 />
@@ -195,18 +234,28 @@ onMounted(fetchCompanyNames);
               <VCol cols="12">
                 <AppSelect
                   v-model="ExperienceRequired"
-                  :items="['Low Level (0 to 1 Yrs) ', 'Medium Level (2 TO 5 Yrs)', 'High Level (5+ Yrs)', ]"
+                  :items="[
+                    'Low Level (0 to 1 Yrs) ',
+                    'Medium Level (2 TO 5 Yrs)',
+                    'High Level (5+ Yrs)',
+                  ]"
                   label="Experience Required"
                   placeholder="Experience Required"
                 />
               </VCol>
-              
+
               <!-- skills required -->
               <VCol cols="12">
-                <label for="skillsRequired" class="skills-margin">Skills Required</label>
+                <label for="skillsRequired" class="skills-margin"
+                  >Skills Required</label
+                >
                 <div id="skillsRequired" class="skills-grid">
                   <!-- List of checkboxes for skills -->
-                  <div v-for="skill in skillsOptions" :key="skill.value" class="skills-checkbox">
+                  <div
+                    v-for="skill in skillsOptions"
+                    :key="skill.value"
+                    class="skills-checkbox"
+                  >
                     <VCheckbox
                       v-model="skillsRequired"
                       :value="skill.value"
@@ -219,12 +268,20 @@ onMounted(fetchCompanyNames);
 
               <!-- Posted On -->
               <VCol cols="12">
-                <AppDateTimePicker v-model="PostedOn" label="Posted On" placeholder="YYYY-MM-DD"/>
+                <AppDateTimePicker
+                  v-model="PostedOn"
+                  label="Posted On"
+                  placeholder="YYYY-MM-DD"
+                />
               </VCol>
 
               <!-- Expires On -->
               <VCol cols="12">
-                <AppDateTimePicker v-model="ExpiresOn" label="Expires On" placeholder="YYY-MM-DD" />
+                <AppDateTimePicker
+                  v-model="ExpiresOn"
+                  label="Expires On"
+                  placeholder="YYY-MM-DD"
+                />
               </VCol>
 
               <!-- Company -->
@@ -243,7 +300,12 @@ onMounted(fetchCompanyNames);
               <!-- Submit and Cancel Buttons -->
               <VCol cols="12">
                 <VBtn type="submit" class="me-3">Submit</VBtn>
-                <VBtn variant="tonal" color="secondary" @click="closeNavigationDrawer">Cancel</VBtn>
+                <VBtn
+                  variant="tonal"
+                  color="secondary"
+                  @click="closeNavigationDrawer"
+                  >Cancel</VBtn
+                >
               </VCol>
             </VRow>
           </VForm>
