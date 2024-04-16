@@ -39,6 +39,10 @@ const headers = [
     key: "website",
   },
   {
+    title: "Location",
+    key:"address"
+  },
+  {
     title: "Status",
     key: "status",
   },
