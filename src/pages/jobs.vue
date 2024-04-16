@@ -19,6 +19,15 @@ const permentDelete = ref(false);
 const tempDelete = ref(false);
 const loading = ref(false);
 const search = ref("");
+const items = [
+  'Full Time',
+  'Part Time',
+  'Hybrid',
+  'Work From Home',
+  'Work From Office',
+  'Internship',
+]
+const selectedFilter = ref(null);
 
 // headers
 const headers = [
@@ -72,7 +81,6 @@ const openAddNewCompanyDrawer = async (employeeData) => {
       };
       const response = await axios.get(`/job/${employeeData.id}`, config);
       editCompanyData.value = response.data;
-      console.log(editCompanyData.value);
       if (editCompanyData.value) {
         isEditMode.value = true;
         isAddNewCompanyDrawerVisible.value = true;
@@ -156,7 +164,6 @@ const handleNewUserData = async (employeeData) => {
         Authorization: `Bearer ${token}`,
       },
     };
-    console.log(isEditMode.value);
     if (isEditMode.value) {
       let response = await axios.post(
         `/job/update/${editCompanyData.value.id}`,
@@ -203,7 +210,6 @@ const fetchData = async () => {
     };
     const response = await axios.get("/jobs", config);
     userList.value = response.data;
-    console.log(userList.value);
   } catch (error) {
     console.error("Failed to fetch company data:", error.message);
   }
@@ -227,7 +233,6 @@ watch(search, () => {
 });
 
 watch(search, async (newValue, oldValue) => {
-  // Only send a request if the search term has changed
   if (newValue !== oldValue) {
     try {
       const token = localStorage.getItem("token");
@@ -246,6 +251,29 @@ watch(search, async (newValue, oldValue) => {
   }
 });
 
+watch(selectedFilter, async (newValue, oldValue) => {
+  if (newValue !== oldValue) {
+    try {
+      const token = localStorage.getItem("token");
+      const config = {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      };
+      let response;
+      if(newValue === null) {
+        response = await axios.get(`/jobs`, config);
+      } else {
+        response = await axios.get(`/jobs?employment_type=${newValue}`, config);
+      }
+      userList.value = response.data;
+    } catch (error) {
+      console.error("Failed to fetch company data:", error.message);
+    }
+  }
+});
+
+
 onMounted(() => {
   fetchData();
 });
@@ -263,15 +291,27 @@ onMounted(() => {
         </VBtn>
       </div>
 
-      <div class="search-container">
-        <VTextField
-          v-model="search"
-          label="Search"
-          outlined
-          dense
-          clearable
-          placeholder="Search Jobs by Title"
-        />
+      <div class="search-container d-flex align-center">
+        <div class="search-input" style="width: 70%;">
+          <VTextField
+            v-model="search"
+            label="Search"
+            outlined
+            dense
+            clearable
+            placeholder="Search Jobs by Title"
+          />
+        </div>
+        <div class="filter-select" style="width: 30%;">
+          <AppSelect
+          v-model="selectedFilter"
+            :items="items"
+            clearable
+            clear-icon="tabler-x"
+            single-line
+            placeholder="Show By Type"
+          />
+        </div>
       </div>
 
       <VDataTable :headers="headers" :items="userList" :items-per-page="10">
@@ -380,8 +420,21 @@ onMounted(() => {
 
 <style scoped>
 .search-container {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
   margin-bottom: 20px;
 }
+
+.search-input {
+  width: 70%;
+  margin-right: 10px;
+}
+
+.filter-select {
+  width: 30%;
+}
+
 .v-text-field {
   width: 100%;
 }

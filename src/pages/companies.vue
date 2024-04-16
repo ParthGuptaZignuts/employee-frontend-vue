@@ -249,7 +249,6 @@ watch(selectedFilter, async (newValue, oldValue) => {
         status = "I";
       }
 
-      console.log(`/companies?status=${status}`);
       const response = await axios.get(`/companies?status=${status}`, config);
       userList.value = response.data.data;
     } catch (error) {
