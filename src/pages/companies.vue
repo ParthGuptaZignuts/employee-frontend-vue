@@ -202,26 +202,6 @@ watch(search, () => {
   debouncedSearch();
 });
 
-watch(search, async (newValue, oldValue) => {
-
-  if (newValue !== oldValue) {
-    try {
-      const token = localStorage.getItem("token");
-
-      const config = {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      };
-
-      const response = await axios.get(`/companies?search=${newValue}`, config);
-      userList.value = response.data.data;
-    } catch (error) {
-      console.error("Failed to fetch company data:", error.message);
-    }
-  }
-});
-
 onMounted(() => {
   fetchData();
 });
