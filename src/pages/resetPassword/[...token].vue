@@ -1,67 +1,109 @@
 <script setup>
-import { useGenerateImageVariant } from '@core/composable/useGenerateImageVariant'
-import authV2LoginIllustrationBorderedDark from '@images/pages/auth-v2-login-illustration-bordered-dark.png'
-import authV2LoginIllustrationBorderedLight from '@images/pages/auth-v2-login-illustration-bordered-light.png'
-import authV2LoginIllustrationDark from '@images/pages/auth-v2-login-illustration-dark.png'
-import authV2LoginIllustrationLight from '@images/pages/auth-v2-login-illustration-light.png'
-import authV2MaskDark from '@images/pages/misc-mask-dark.png'
-import authV2MaskLight from '@images/pages/misc-mask-light.png'
-import { useRouter } from 'vue-router'
-import { VForm } from 'vuetify/components/VForm'
-import axios from "../../axiosFile"
-import { validationRules } from '../../composables/useValidation.js'
+// Importing necessary functions and components
+import { useGenerateImageVariant } from "@core/composable/useGenerateImageVariant";
+import authV2LoginIllustrationBorderedDark from "@images/pages/auth-v2-login-illustration-bordered-dark.png";
+import authV2LoginIllustrationBorderedLight from "@images/pages/auth-v2-login-illustration-bordered-light.png";
+import authV2LoginIllustrationDark from "@images/pages/auth-v2-login-illustration-dark.png";
+import authV2LoginIllustrationLight from "@images/pages/auth-v2-login-illustration-light.png"; 
+import authV2MaskDark from "@images/pages/misc-mask-dark.png"; 
+import authV2MaskLight from "@images/pages/misc-mask-light.png"; 
+import { useRouter } from "vue-router";
+import { VForm } from "vuetify/components/VForm";
+import axios from "../../axiosFile"; 
+import { validationRules } from "../../composables/useValidation.js"; 
+import { toast } from "vue3-toastify"; 
+import "vue3-toastify/dist/index.css"; 
 
-const authThemeImg = useGenerateImageVariant(authV2LoginIllustrationLight, authV2LoginIllustrationDark, authV2LoginIllustrationBorderedLight, authV2LoginIllustrationBorderedDark, true)
-const authThemeMask = useGenerateImageVariant(authV2MaskLight, authV2MaskDark)
+// Generate image variant based on theme
+const authThemeImg = useGenerateImageVariant(
+  authV2LoginIllustrationLight,
+  authV2LoginIllustrationDark,
+  authV2LoginIllustrationBorderedLight,
+  authV2LoginIllustrationBorderedDark,
+  true
+);
+// Generate mask image based on theme
+const authThemeMask = useGenerateImageVariant(authV2MaskLight, authV2MaskDark);
 
-const router = useRouter()
-const isPasswordVisible = ref(false)
-const refVForm = ref()
-const email = ref('')
-const password = ref('')
-const confirmPassword = ref('')
-const errorMessage = ref('')
-const successMessage = ref('')
+// Reactive variables and references
+const router = useRouter();
+const isPasswordVisible = ref(false);
+const refVForm = ref(); 
+const email = ref(""); 
+const password = ref(""); 
+const confirmPassword = ref(""); 
+const confirmPasswordVisible = ref(false);
 
+// Function to toggle password visibility
 const togglePasswordVisibility = () => {
-  isPasswordVisible.value = !isPasswordVisible.value
-}
+  isPasswordVisible.value = !isPasswordVisible.value;
+};
 
+// Function to toggle confirm password visibility
+const toggleConfirmPasswordVisibility = () => {
+  confirmPasswordVisible.value = !confirmPasswordVisible.value;
+};
+
+// Function to validate password match
 const validatePasswordMatch = () => {
-  return confirmPassword.value === password.value || 'Passwords do not match'
-}
+  return confirmPassword.value === password.value || "Passwords do not match";
+};
 
+// Function to handle form submission
 const handleSubmit = async () => {
   try {
-    const validate = await refVForm.value.validate()
-    if (!validate.valid) return
+    // Validate form
+    const validate = await refVForm.value.validate();
+    if (!validate.valid) return;
 
-    const token = window.location.pathname.split('/').pop() 
+    // Extract token from URL
+    const token = window.location.pathname.split("/").pop();
+    // Prepare payload for API request
     const payload = {
       email: email.value,
       token: token,
       password: password.value,
       password_confirmation: confirmPassword.value,
-    }
-    console.log(payload);
-    const response = await axios.post('/password/reset', payload)
-    console.log(response.data);
-    successMessage.value = response.data.message
+    };
 
-    router.push('/login')
+    // Make API request to reset password
+    const response = await axios.post("/password/reset", payload);
+    // Show success toast
+    toast("Password Reset Successfully", {
+      theme: "auto",
+      type: "success",
+      pauseOnHover: false,
+      pauseOnFocusLoss: false,
+      dangerouslyHTMLString: true,
+    });
+    // Redirect to login page after a delay
+    setTimeout(() => {
+      router.push("/login");
+    }, 1500);
   } catch (error) {
-    console.error('API call failed:', error)
-    errorMessage.value = error.response.data.message || 'Failed to reset password'
+    // Log error and show warning toast
+    console.error("API call failed:", error);
+    toast("Failed to Reset Password", {
+      theme: "auto",
+      type: "warning",
+      pauseOnHover: false,
+      pauseOnFocusLoss: false,
+      dangerouslyHTMLString: true,
+    });
   }
-}
+};
 </script>
 
 <template>
+  <!-- Main container -->
   <div>
+    <!-- Row for layout -->
     <VRow no-gutters class="auth-wrapper bg-surface">
+      <!-- Column for illustration -->
       <VCol lg="8" class="d-none d-lg-flex">
         <div class="position-relative bg-background rounded-lg w-100 ma-8 me-0">
           <div class="d-flex align-center justify-center w-100 h-100">
+            <!-- Illustration image -->
             <VImg
               max-width="505"
               :src="authThemeImg"
@@ -69,40 +111,30 @@ const handleSubmit = async () => {
             />
           </div>
 
+          <!-- Mask image -->
           <VImg :src="authThemeMask" class="auth-footer-mask" />
         </div>
       </VCol>
 
       <!-- Form Column -->
-      <VCol cols="12" lg="4" class="auth-card-v2 d-flex align-center justify-center">
+      <VCol
+        cols="12"
+        lg="4"
+        class="auth-card-v2 d-flex align-center justify-center"
+      >
+        <!-- Card for form -->
         <VCard flat :max-width="500" class="mt-12 mt-sm-0 pa-4">
           <VCardText>
+            <!-- Title -->
             <h5 class="text-h5 mb-1">
               Welcome to
               <span class="text-capitalize"> Reset Your Password Page </span>!
-              👋🏻 
+              👋🏻
             </h5>
-
-            <VAlert
-              v-show="errorMessage"
-              color="error"
-              variant="outlined"
-              dismissible
-            >
-              {{ errorMessage }}
-            </VAlert>
-
-            <VAlert
-              v-show="successMessage"
-              color="success"
-              variant="outlined"
-              dismissible
-            >
-              {{ successMessage }}
-            </VAlert>
           </VCardText>
 
           <VCardText>
+            <!-- Form -->
             <VForm ref="refVForm" @submit.prevent="handleSubmit">
               <VRow>
                 <!-- Email Field -->
@@ -137,9 +169,16 @@ const handleSubmit = async () => {
                   <AppTextField
                     v-model="confirmPassword"
                     label="Confirm Password"
-                    type="password"
-                    :rules="[validationRules.confirmPassword, validatePasswordMatch]"
+                    :type="confirmPasswordVisible ? 'text' : 'password'"
+                    :rules="[
+                      validationRules.confirmPassword,
+                      validatePasswordMatch,
+                    ]"
+                    :append-inner-icon="
+                      confirmPasswordVisible ? 'mdi-eye-off' : 'mdi-eye'
+                    "
                     required
+                    @click:append-inner="toggleConfirmPasswordVisibility"
                   />
                 </VCol>
 

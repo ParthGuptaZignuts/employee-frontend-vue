@@ -84,7 +84,7 @@ onMounted(() => {
 });
 </script>
 
-<template>
+<template>  
   <div>
     <div>
       <VRow>

@@ -1,30 +1,32 @@
 <script setup>
-import { avatarText } from "@/@core/utils/formatters";
+// Importing necessary functions and components
+import { avatarText } from "@/@core/utils/formatters"; 
 import AddNewCompanyDrawer from "@/views/AddNewCompanyDrawer.vue";
-import { onMounted, ref } from "vue";
-import { VDataTable } from "vuetify/labs/VDataTable";
-import axios from "../axiosFile.js";
-import { computed } from "vue";
-import { toast } from "vue3-toastify";
-import "vue3-toastify/dist/index.css";
-import { debounce } from "lodash";
+import { onMounted, ref, watch, computed } from "vue"; 
+import { VDataTable } from "vuetify/labs/VDataTable"; 
+import axios from "../axiosFile.js"; 
+import { toast } from "vue3-toastify"; 
+import "vue3-toastify/dist/index.css"; 
+import { debounce } from "lodash"; 
 
-const deleteDialog = ref(false);
+// Reactive variables and references
+const deleteDialog = ref(false); 
 const isAddNewCompanyDrawerVisible = ref(false);
 const editCompanyData = ref(null);
 const isEditMode = ref(false);
-const deleteItemId = ref(null);
+const deleteItemId = ref(null); 
 const userList = ref([]);
-const permentDelete = ref(false);
-const tempDelete = ref(false);
-const loading = ref(false);
-const search = ref("");
-const items = [
+const permentDelete = ref(false); 
+const tempDelete = ref(false); 
+const loading = ref(false); 
+const search = ref(""); 
+const items = [ 
   'Active Companies',
   'In-Active Companies',
 ]
-const selectedFilter = ref(null);
-// headers
+const selectedFilter = ref(null); 
+
+// Headers for data table
 const headers = [
   {
     title: "Name",
@@ -52,6 +54,7 @@ const headers = [
   },
 ];
 
+// Function to determine chip variant based on status
 const resolveStatusVariant = (status) => {
   if (status === "A")
     return {
@@ -70,6 +73,7 @@ const resolveStatusVariant = (status) => {
     };
 };
 
+// Function to open add new company drawer
 const openAddNewCompanyDrawer = async (companyData) => {
   if (companyData) {
     try {
@@ -99,19 +103,23 @@ const openAddNewCompanyDrawer = async (companyData) => {
   }
 };
 
+// Function to delete item
 const deleteItem = (item) => {
   deleteItemId.value = item;
   deleteDialog.value = true;
 };
 
+// Function to close delete dialog
 const closeDelete = () => {
   deleteDialog.value = false;
   permentDelete.value = false;
   tempDelete.value = false;
 };
 
+// Computed property to check if submit button is enabled
 const isSubmitEnabled = computed(() => permentDelete.value || tempDelete.value);
 
+// Function to confirm deletion of item
 const deleteItemConfirm = async () => {
   if (isSubmitEnabled.value) {
     try {
@@ -151,6 +159,7 @@ const deleteItemConfirm = async () => {
   }
 };
 
+// Function to handle new user data
 const handleNewUserData = (userData) => {
   userList.value.push(userData);
   fetchData();
@@ -175,6 +184,7 @@ const handleNewUserData = (userData) => {
   }
 };
 
+// Function to fetch data
 const fetchData = async () => {
   loading.value = true;
   try {
@@ -193,6 +203,7 @@ const fetchData = async () => {
   loading.value = false;
 };
 
+// Function to handle delete option change
 const handleDeleteOptionChange = (option) => {
   if (option === "permanent") {
     tempDelete.value = false;
@@ -201,16 +212,18 @@ const handleDeleteOptionChange = (option) => {
   }
 };
 
+// Debounced search function
 const debouncedSearch = debounce(() => {
   console.log("Searching for:", search.value);
 }, 500);
 
+// Watcher for search input
 watch(search, () => {
   debouncedSearch();
 });
 
+// Watcher for search query change
 watch(search, async (newValue, oldValue) => {
-
   if (newValue !== oldValue) {
     try {
       const token = localStorage.getItem("token");
@@ -229,6 +242,7 @@ watch(search, async (newValue, oldValue) => {
   }
 });
 
+// Watcher for selected filter change
 watch(selectedFilter, async (newValue, oldValue) => {
   if (newValue !== oldValue) {
     try {
@@ -256,152 +270,169 @@ watch(selectedFilter, async (newValue, oldValue) => {
   }
 });
 
-
-
+// Fetch data on component mount
 onMounted(() => {
   fetchData();
 });
 </script>
 
+<!-- Template section -->
 <template>
-  <div>
-    <div v-if="loading" class="d-flex justify-center">
-      <VProgressCircular :size="40" color="primary" indeterminate />
-    </div>
-    <div v-else>
-      <div class="d-flex justify-end ma-3">
-        <VBtn prepend-icon="tabler-plus" @click="openAddNewCompanyDrawer(null)">
-          Add New Company
-        </VBtn>
-      </div>
-
-      <div class="search-container d-flex align-center">
-        <div class="search-input" style="width: 70%;">
-          <VTextField
-            v-model="search"
-            label="Search"
-            outlined
-            dense
-            clearable
-            placeholder="Search Company by Name"
-          />
-        </div>
-        <div class="filter-select" style="width: 30%;">
-          <AppSelect
-          v-model="selectedFilter"
-            :items="items"
-            clearable
-            clear-icon="tabler-x"
-            single-line
-            placeholder="show All Companies"
-          />
-        </div>
-      </div>
-
-      <VDataTable :headers="headers" :items="userList" :items-per-page="10">
-        <template #item.name="{ item }">
-          <div class="d-flex align-center">
-            <VAvatar
-              size="32"
-              :color="item.raw.avatar ? '' : 'primary'"
-              :class="item.raw.avatar ? '' : 'v-avatar-light-bg primary--text'"
-              :variant="!item.raw.avatar ? 'tonal' : undefined"
-            >
-              <VImg
-                v-if="item.raw.logo"
-                :src="`http://127.0.0.1:8000/storage/logos/${item.raw.logo}`"
-              />
-              <span v-else>{{ avatarText(item.raw.name) }}</span>
-            </VAvatar>
-
-            <div class="d-flex flex-column ms-3">
-              <span
-                class="d-block font-weight-medium text--primary text-truncate"
-                >{{ item.raw.name }}</span
-              >
-            </div>
-          </div>
-        </template>
-
-        <template #item.company_email="{ item }">
-          <span>{{ item.raw.company_email }}</span>
-        </template>
-
-        <template #item.website="{ item }">
-          <a :href="item.raw.website" target="_blank" rel="noopener noreferrer"
-            ><span>{{ item.raw.name }}</span></a
-          >
-        </template>
-
-        <template #item.status="{ item }">
-          <VChip
-            :color="resolveStatusVariant(item.raw.status).color"
-            size="small"
-            label
-            class="text-capitalize"
-          >
-            {{ resolveStatusVariant(item.raw.status).text }}
-          </VChip>
-        </template>
-
-        <template #item.actions="{ item }">
-          <div class="d-flex gap-1">
-            <IconBtn @click="openAddNewCompanyDrawer(item.raw)">
-              <VIcon icon="mdi-pencil-outline" />
-            </IconBtn>
-            <IconBtn @click="deleteItem(item.raw.id)">
-              <VIcon icon="mdi-delete-outline" />
-            </IconBtn>
-          </div>
-        </template>
-      </VDataTable>
-    </div>
-
-    <VDialog v-model="deleteDialog" max-width="500px">
-      <VCard>
-        <VCardTitle class="text-center d-flex align-center justify-center mb-3">
-          Are you sure you want to delete this item?
-        </VCardTitle>
-        <div class="text-center d-flex align-center justify-center mb-5">
-          <VCheckbox
-            v-model="permentDelete"
-            label="DELETE ITEM PERMANENTLY"
-            name="del"
-            @change="handleDeleteOptionChange('permanent')"
-          />
-        </div>
-        <div class="text-center d-flex align-center justify-center mb-5">
-          <VCheckbox
-            v-model="tempDelete"
-            label="DELETE ITEM TEMPORARILY"
-            name="del"
-            @change="handleDeleteOptionChange('temporary')"
-          />
-        </div>
-        <VCardActions>
-          <VSpacer />
-          <VBtn color="error" variant="outlined" @click="closeDelete">
-            Cancel
-          </VBtn>
-          <VBtn
-            color="success"
-            variant="elevated"
-            @click="deleteItemConfirm"
-            :disabled="!isSubmitEnabled"
-          >
-            OK
-          </VBtn>
-          <VSpacer />
-        </VCardActions>
-      </VCard>
-    </VDialog>
-    <AddNewCompanyDrawer
-      v-model:isDrawerOpen="isAddNewCompanyDrawerVisible"
-      :company-data="editCompanyData"
-      @user-data="handleNewUserData"
-    />
+  <div> 
+  <!-- Loading indicator -->
+  <div v-if="loading" class="d-flex justify-center">
+    <VProgressCircular :size="40" color="primary" indeterminate />
   </div>
+  <!-- Main content -->
+  <div v-else>
+    <!-- Add new company button -->
+    <div class="d-flex justify-end ma-3">
+      <VBtn prepend-icon="tabler-plus" @click="openAddNewCompanyDrawer(null)">
+        Add New Company
+      </VBtn>
+    </div>
+    <!-- Search and filter section -->
+    <div class="search-container d-flex align-center">
+      <!-- Search input -->
+      <div class="search-input" style="width: 70%;">
+        <VTextField
+          v-model="search"
+          label="Search"
+          outlined
+          dense
+          clearable
+          placeholder="Search Company by Name"
+        />
+      </div>
+      <!-- Filter select -->
+      <div class="filter-select" style="width: 30%;">
+        <AppSelect
+        v-model="selectedFilter"
+          :items="items"
+          clearable
+          clear-icon="tabler-x"
+          single-line
+          placeholder="show All Companies"
+        />
+      </div>
+    </div>
+    <!-- Data table -->
+    <VDataTable :headers="headers" :items="userList" :items-per-page="10">
+      <!-- Custom template for each row -->
+      <template #item.name="{ item }">
+        <!-- Company avatar -->
+        <div class="d-flex align-center">
+          <VAvatar
+            size="32"
+            :color="item.raw.avatar ? '' : 'primary'"
+            :class="item.raw.avatar ? '' : 'v-avatar-light-bg primary--text'"
+            :variant="!item.raw.avatar ? 'tonal' : undefined"
+          >
+            <VImg
+              v-if="item.raw.logo"
+              :src="`http://127.0.0.1:8000/storage/logos/${item.raw.logo}`"
+            />
+            <span v-else>{{ avatarText(item.raw.name) }}</span>
+          </VAvatar>
+          <!-- Company name -->
+          <div class="d-flex flex-column ms-3">
+            <span
+              class="d-block font-weight-medium text--primary text-truncate"
+              >{{ item.raw.name }}</span
+            >
+          </div>
+        </div>
+      </template>
+      <!-- Custom template for company email -->
+      <template #item.company_email="{ item }">
+        <span>{{ item.raw.company_email }}</span>
+      </template>
+      <!-- Custom template for website -->
+      <template #item.website="{ item }">
+        <a :href="item.raw.website" target="_blank" rel="noopener noreferrer"
+          ><span>{{ item.raw.name }}</span></a
+        >
+      </template>
+      <!-- Custom template for status -->
+      <template #item.status="{ item }">
+        <VChip
+          :color="resolveStatusVariant(item.raw.status).color"
+          size="small"
+          label
+          class="text-capitalize"
+        >
+          {{ resolveStatusVariant(item.raw.status).text }}
+        </VChip>
+      </template>
+      <!-- Custom template for actions -->
+      <template #item.actions="{ item }">
+        <div class="d-flex gap-1">
+          <!-- Edit button -->
+          <IconBtn @click="openAddNewCompanyDrawer(item.raw)">
+            <VIcon icon="mdi-pencil-outline" />
+          </IconBtn>
+          <!-- Delete button -->
+          <IconBtn @click="deleteItem(item.raw.id)">
+            <VIcon icon="mdi-delete-outline" />
+          </IconBtn>
+        </div>
+      </template>
+    </VDataTable>
+  </div>
+  <!-- Delete dialog -->
+  <VDialog v-model="deleteDialog" max-width="500px">
+    <VCard>
+      <VCardTitle class="text-center d-flex align-center justify-center mb-3">
+        Are you sure you want to delete this item?
+      </VCardTitle>
+      <!-- Checkbox for permanent delete -->
+      <div class="text-center d-flex align-center justify-center mb-5">
+        <VCheckbox
+          v-model="permentDelete"
+          label="DELETE ITEM PERMANENTLY"
+          name="del"
+          @change="handleDeleteOptionChange('permanent')"
+        />
+      </div>
+      <!-- Checkbox for temporary delete -->
+      <div class="text-center d-flex align-center justify-center mb-5">
+        <VCheckbox
+          v-model="tempDelete"
+          label="DELETE ITEM TEMPORARILY"
+          name="del"
+          @change="handleDeleteOptionChange('temporary')"
+        />
+      </div>
+      <!-- Dialog actions -->
+      <VCardActions>
+        <VSpacer />
+        <!-- Cancel button -->
+        <VBtn color="error" variant="outlined" @click="closeDelete">
+          Cancel
+        </VBtn>
+        <!-- OK button -->
+        <VBtn
+          color="success"
+          variant="elevated"
+          @click="deleteItemConfirm"
+          :disabled="!isSubmitEnabled"
+        >
+          OK
+        </VBtn>
+        <VSpacer />
+      </VCardActions>
+    </VCard>
+  </VDialog>
+  <!-- Add new company drawer -->
+  <AddNewCompanyDrawer
+    v-model:isDrawerOpen="isAddNewCompanyDrawerVisible"
+    :company-data="editCompanyData"
+    @user-data="handleNewUserData"
+  />
+</div>
 </template>
+
+<!-- Scoped styles -->
 <style scoped>
 .search-container {
   display: flex;

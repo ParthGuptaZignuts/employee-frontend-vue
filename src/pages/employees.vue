@@ -1,4 +1,5 @@
 <script setup>
+// Importing necessary functions and components
 import { avatarText } from "@/@core/utils/formatters";
 import AddNewEmployeeDrawer from "../views/AddNewEmployeeDrawer.vue";
 import { onMounted, ref } from "vue";
@@ -9,6 +10,7 @@ import { toast } from "vue3-toastify";
 import "vue3-toastify/dist/index.css";
 import { debounce } from "lodash";
 
+// Reactive variables and references
 const deleteDialog = ref(false);
 const isAddNewCompanyDrawerVisible = ref(false);
 const editCompanyData = ref(null);
@@ -24,9 +26,11 @@ const selectedFilter = ref(null);
 const companyOptions = ref([]);
 const checkUser = ref(true)
 
+// check usertype from local storage
 const localcheck = localStorage.getItem("type");
 (localcheck !== "SA") ? checkUser.value = false : true;
-// headers
+
+// Headers for data table
 const headers = [
   {
     title: "First Name",
@@ -62,6 +66,7 @@ const headers = [
   },
 ];
 
+// Function to determine chip variant based on status
 const resolveStatusVariant = (status) => {
   if (status === "E") {
     return {
@@ -81,6 +86,7 @@ const resolveStatusVariant = (status) => {
   }
 };
 
+// Function to open add new company drawer
 const openAddNewCompanyDrawer = async (employeeData) => {
   if (employeeData) {
     try {
@@ -106,19 +112,23 @@ const openAddNewCompanyDrawer = async (employeeData) => {
   }
 };
 
+// Function to delete item
 const deleteItem = (item) => {
   deleteItemId.value = item;
   deleteDialog.value = true;
 };
 
+// Function to close delete dialog
 const closeDelete = () => {
   deleteDialog.value = false;
   permentDelete.value = false;
   tempDelete.value = false;
 };
 
+// Computed property to check if submit button is enabled
 const isSubmitEnabled = computed(() => permentDelete.value || tempDelete.value);
 
+// Function to confirm deletion of item
 const deleteItemConfirm = async () => {
   if (isSubmitEnabled.value) {
     try {
@@ -160,6 +170,7 @@ const deleteItemConfirm = async () => {
   }
 };
 
+// Function to handle new user data
 const handleNewUserData = async (employeeData) => {
   try {
     loading.value = true;
@@ -205,6 +216,7 @@ const handleNewUserData = async (employeeData) => {
   }
 };
 
+// Function to fetch data
 const fetchData = async () => {
   loading.value = true;
   try {
@@ -223,6 +235,7 @@ const fetchData = async () => {
   loading.value = false;
 };
 
+// Function to handle delete option change
 const handleDeleteOptionChange = (option) => {
   if (option === "permanent") {
     tempDelete.value = false;
@@ -231,10 +244,12 @@ const handleDeleteOptionChange = (option) => {
   }
 };
 
+// Debounced search function
 const debouncedSearch = debounce(() => {
   console.log("Searching for:", search.value);
 }, 500);
 
+// function to fetch companies
 const fetchCompanyNames = async () => {
   try {
     const token = localStorage.getItem("token");
@@ -256,6 +271,7 @@ const fetchCompanyNames = async () => {
   }
 };
 
+// Watcher for search input
 watch(search, () => {
   debouncedSearch();
 });
@@ -280,6 +296,7 @@ watch(search, async (newValue, oldValue) => {
   }
 });
 
+// Watcher for selected filter change
 watch(selectedFilter, async (newValue, oldValue) => {
   if (newValue !== oldValue) {
     try {
@@ -304,25 +321,32 @@ watch(selectedFilter, async (newValue, oldValue) => {
   }
 });
 
+// Fetch data with company names on component mount 
 onMounted(() => {
   fetchData();
   fetchCompanyNames();
 });
 </script>
 
+<!-- Template section -->
 <template>
   <div>
+     <!-- Loading indicator -->
     <div v-if="loading" class="d-flex justify-center">
       <VProgressCircular :size="40" color="primary" indeterminate />
     </div>
+     <!-- Main content -->
     <div v-else>
+       <!-- Add new employee button -->
       <div class="d-flex justify-end ma-3">
         <VBtn prepend-icon="tabler-plus" @click="openAddNewCompanyDrawer(null)">
           Add New Employee
         </VBtn>
       </div>
 
+      <!-- Search and filter section -->
       <div class="search-container d-flex align-center">
+        <!-- Search input -->
         <VRow class="search-input">
           <VCol cols="12">
             <VTextField
@@ -335,6 +359,7 @@ onMounted(() => {
             />
           </VCol>
         </VRow>
+        <!-- Filter select -->
         <div class="filter-select" style="width: 30%;" v-if="checkUser">
           <AppSelect
           v-model="selectedFilter"
@@ -347,6 +372,7 @@ onMounted(() => {
         </div>
       </div>  
 
+       <!-- Data table -->
       <VDataTable :headers="headers" :items="userList" :items-per-page="10">
         <template #item.name="{ item }">
           <div class="d-flex align-center">
@@ -371,7 +397,7 @@ onMounted(() => {
             </div>
           </div>
         </template>
-
+        
         <template #item.company_email="{ item }">
           <span>{{ item.raw.company_email }}</span>
         </template>

@@ -276,6 +276,7 @@ watch(
 </script>
 
 <template>
+  <div>
   <VNavigationDrawer
     temporary
     :width="400"
@@ -441,4 +442,5 @@ watch(
       </VCard>
     </PerfectScrollbar>
   </VNavigationDrawer>
+</div>
 </template>

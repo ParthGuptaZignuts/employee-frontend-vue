@@ -1,4 +1,5 @@
 <script setup>
+// Importing necessary functions and components
 import { useGenerateImageVariant } from "@core/composable/useGenerateImageVariant";
 import authV2LoginIllustrationBorderedDark from "@images/pages/auth-v2-login-illustration-bordered-dark.png";
 import authV2LoginIllustrationBorderedLight from "@images/pages/auth-v2-login-illustration-bordered-light.png";
@@ -8,15 +9,12 @@ import authV2MaskDark from "@images/pages/misc-mask-dark.png";
 import authV2MaskLight from "@images/pages/misc-mask-light.png";
 import { useRouter } from "vue-router";
 import { VForm } from "vuetify/components/VForm";
-import axios from "../axiosFile";
-import {
-  validateEmail,
-  validatePassword,
-  validationRules,
-} from "../composables/useValidation.js";
+import axios from "../axiosFile"; // Assuming axiosFile contains axios instance
+import { validationRules } from "../composables/useValidation.js";
 import { toast } from "vue3-toastify";
 import "vue3-toastify/dist/index.css";
 
+// Generating image variants based on the theme
 const authThemeImg = useGenerateImageVariant(
   authV2LoginIllustrationLight,
   authV2LoginIllustrationDark,
@@ -25,26 +23,35 @@ const authThemeImg = useGenerateImageVariant(
   true
 );
 const authThemeMask = useGenerateImageVariant(authV2MaskLight, authV2MaskDark);
+
+// Reactive variables and references
 const isPasswordVisible = ref(false);
 const refVForm = ref();
 const email = ref("");
 const password = ref("");
-const errorMessage = ref("");
-const router = useRouter();
+const router = useRouter(); 
 
+// Handle form submission
 const handleSubmit = async () => {
   try {
+    // Validate form fields
     const validate = await refVForm.value.validate();
 
-    if (!validate.valid) return;
+    if (!validate.valid) return; // If validation fails, do nothing
+
+    // Prepare payload for API request
     const payload = {
       email: email.value,
       password: password.value,
     };
 
+    // Make API call to login endpoint
     const response = await axios.post("/login", payload);
+
+    // Handle response based on user type
     if (response.data.data.user) {
       if (response.data.data.user.type === "SA") {
+        // If super admin, set token and type in local storage, show success message, and redirect
         localStorage.setItem("token", response.data.data.token);
         localStorage.setItem("type", "SA");
         toast("Super Admin login Successful", {
@@ -58,31 +65,9 @@ const handleSubmit = async () => {
           router.push("/");
         }, 2000);
       } else if (response.data.data.user.type === "CA") {
+        // If company admin, set token and type in local storage, show success message, and redirect
         localStorage.setItem("token", response.data.data.token);
         localStorage.setItem("type", "CA");
-        // if (password.value === "password") {
-        //   toast("Please Set Your Password", {
-        //     theme: "auto",
-        //     type: "warning",
-        //     pauseOnHover: false,
-        //     pauseOnFocusLoss: false,
-        //     dangerouslyHTMLString: true,
-        //   });
-        //   setTimeout(function () {
-        //     router.push("/");
-        //   }, 3000);
-        // } else {
-        //   toast("Company Admin login Successful", {
-        //     theme: "auto",
-        //     type: "success",
-        //     pauseOnHover: false,
-        //     pauseOnFocusLoss: false,
-        //     dangerouslyHTMLString: true,
-        //   });
-        //   setTimeout(function () {
-        //     router.push("/");
-        //   }, 3000);
-        // }
         toast("Company Admin login Successful", {
           theme: "auto",
           type: "success",
@@ -95,6 +80,7 @@ const handleSubmit = async () => {
         }, 2000);
       }
     } else {
+      // If user data not found, show warning message
       toast("User data not found", {
         theme: "auto",
         type: "warning",
@@ -104,11 +90,18 @@ const handleSubmit = async () => {
       });
     }
   } catch (error) {
-    console.error("API call failed:", error);
-    errorMessage.value = error.message;
+    // If API call fails, show error message
+    toast("API call failed:", error, {
+      theme: "auto",
+      type: "warning",
+      pauseOnHover: false,
+      pauseOnFocusLoss: false,
+      dangerouslyHTMLString: true,
+    });
   }
 };
 </script>
+
 <template>
   <div>
     <VRow no-gutters class="auth-wrapper bg-surface">
@@ -142,17 +135,6 @@ const handleSubmit = async () => {
             <p class="mb-0">
               Please sign-in to your account and start the adventure
             </p>
-
-            <VAlert
-              v-show="errorMessage"
-              color="primary"
-              variant="tonal"
-              dismissible
-            >
-              <p class="text-caption mb-2">
-                {{ errorMessage }}
-              </p>
-            </VAlert>
           </VCardText>
 
           <VCardText>

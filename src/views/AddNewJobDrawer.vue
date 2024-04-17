@@ -175,6 +175,7 @@ onMounted(fetchCompanyNames);
 </script>
 
 <template>
+  <div>
   <VNavigationDrawer
     temporary
     :width="400"
@@ -313,6 +314,7 @@ onMounted(fetchCompanyNames);
       </VCard>
     </PerfectScrollbar>
   </VNavigationDrawer>
+</div>
 </template>
 
 <style>
