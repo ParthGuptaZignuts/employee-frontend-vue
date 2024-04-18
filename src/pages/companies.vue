@@ -222,53 +222,32 @@ watch(search, () => {
   debouncedSearch();
 });
 
-// Watcher for search query change
-watch(search, async (newValue, oldValue) => {
-  if (newValue !== oldValue) {
+watch([search, selectedFilter], async ([searchValue, filterValue], [prevSearchValue, prevFilterValue]) => {
+  // Check if search value or filter value has changed
+  if (searchValue !== prevSearchValue || filterValue !== prevFilterValue) {
     try {
       const token = localStorage.getItem("token");
-
       const config = {
         headers: {
           Authorization: `Bearer ${token}`,
         },
       };
-
-      const response = await axios.get(`/companies?search=${newValue}`, config);
-      userList.value = response.data.data;
-    } catch (error) {
-      console.error("Failed to fetch company data:", error.message);
-    }
-  }
-});
-
-// Watcher for selected filter change
-watch(selectedFilter, async (newValue, oldValue) => {
-  if (newValue !== oldValue) {
-    try {
-      const token = localStorage.getItem("token");
-
-      const config = {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      };
-
-      let status;
-      console.log(newValue);
-      if (newValue === "Active Companies") {
+      
+      let status = null;
+      if (filterValue === "Active Companies") {
         status = "A";
-      } else if (newValue === "In-Active Companies") {
+      } else if (filterValue === "In-Active Companies") {
         status = "I";
       }
 
-      const response = await axios.get(`/companies?status=${status}`, config);
+      const response = await axios.get(`/companies?search=${searchValue}&status=${status}`, config);
       userList.value = response.data.data;
     } catch (error) {
       console.error("Failed to fetch company data:", error.message);
     }
   }
 });
+
 
 // Fetch data on component mount
 onMounted(() => {

@@ -24,11 +24,11 @@ const search = ref("");
 const items = ref([]);
 const selectedFilter = ref(null);
 const companyOptions = ref([]);
-const checkUser = ref(true)
+const checkUser = ref(true);
 
 // check usertype from local storage
 const localcheck = localStorage.getItem("type");
-(localcheck !== "SA") ? checkUser.value = false : true;
+localcheck !== "SA" ? (checkUser.value = false) : true;
 
 // Headers for data table
 const headers = [
@@ -216,7 +216,7 @@ const handleNewUserData = async (employeeData) => {
   }
 };
 
-// Function to fetch data call an api 
+// Function to fetch data call an api
 const fetchData = async () => {
   loading.value = true;
   try {
@@ -261,10 +261,10 @@ const fetchCompanyNames = async () => {
     };
 
     const response = await axios.get("getallcompanies", config);
-    items.value = response.data.map(company => company.name);
-    companyOptions.value = response.data.map(company => ({
+    items.value = response.data.map((company) => company.name);
+    companyOptions.value = response.data.map((company) => ({
       id: company.id,
-      name: company.name
+      name: company.name,
     }));
   } catch (error) {
     console.error("Error fetching company options:", error);
@@ -276,53 +276,91 @@ watch(search, () => {
   debouncedSearch();
 });
 
-// watcher for search input 
-watch(search, async (newValue, oldValue) => {
-  // Only send a request if the search term has changed
-  if (newValue !== oldValue) {
-    try {
-      const token = localStorage.getItem("token");
+// watcher for search input
+// watch(search, async (newValue, oldValue) => {
+//   // Only send a request if the search term has changed
+//   if (newValue !== oldValue) {
+//     try {
+//       const token = localStorage.getItem("token");
 
-      const config = {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      };
+//       const config = {
+//         headers: {
+//           Authorization: `Bearer ${token}`,
+//         },
+//       };
 
-      const response = await axios.get(`/employees?search=${newValue}`, config);
-      userList.value = response.data.data;
-    } catch (error) {
-      console.error("Failed to fetch company data:", error.message);
-    }
-  }
-});
+//       const response = await axios.get(`/employees?search=${newValue}`, config);
+//       userList.value = response.data.data;
+//     } catch (error) {
+//       console.error("Failed to fetch company data:", error.message);
+//     }
+//   }
+// });
 
 // Watcher for selected filter change
-watch(selectedFilter, async (newValue, oldValue) => {
-  if (newValue !== oldValue) {
-    try {
-      if (!newValue) {
-        await fetchData();
-      } else {
-        const selectedCompany = companyOptions.value.find(company => company.name === newValue);
-        if (selectedCompany) {
-          const token = localStorage.getItem("token");
-          const config = {
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
-          };
-          const response = await axios.get(`/employees?search_filter=${selectedCompany.id}`, config);
-          userList.value = response.data.data;
+// watch(selectedFilter, async (newValue, oldValue) => {
+//   if (newValue !== oldValue) {
+//     try {
+//       if (!newValue) {
+//         await fetchData();
+//       } else {
+//         const selectedCompany = companyOptions.value.find(company => company.name === newValue);
+//         if (selectedCompany) {
+//           const token = localStorage.getItem("token");
+//           const config = {
+//             headers: {
+//               Authorization: `Bearer ${token}`,
+//             },
+//           };
+//           const response = await axios.get(`/employees?search_filter=${selectedCompany.id}`, config);
+//           userList.value = response.data.data;
+//         }
+//       }
+//     } catch (error) {
+//       console.error("Failed to fetch employee data:", error.message);
+//     }
+//   }
+// });
+
+watch(
+  [search, selectedFilter],
+  async ([searchValue, filterValue], [prevSearchValue, prevFilterValue]) => {
+    // Check if search value or filter value has changed
+    if (searchValue !== prevSearchValue || filterValue !== prevFilterValue) {
+      try {
+        const token = localStorage.getItem("token");
+        const config = {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        };
+
+        let apiUrl = "/employees";
+        const params = {};
+
+        if (searchValue) {
+          params.search = searchValue;
         }
+
+        if (filterValue) {
+          const selectedCompany = companyOptions.value.find(
+            (company) => company.name === filterValue
+          );
+          if (selectedCompany) {
+            params.search_filter = selectedCompany.id;
+          }
+        }
+
+        const response = await axios.get(apiUrl, { params, ...config });
+        userList.value = response.data.data;
+      } catch (error) {
+        console.error("Failed to fetch employee data:", error.message);
       }
-    } catch (error) {
-      console.error("Failed to fetch employee data:", error.message);
     }
   }
-});
+);
 
-// Fetch data with company names on component mount 
+// Fetch data with company names on component mount
 onMounted(() => {
   fetchData();
   fetchCompanyNames();
@@ -332,13 +370,13 @@ onMounted(() => {
 <!-- Template section -->
 <template>
   <div>
-     <!-- Loading indicator -->
+    <!-- Loading indicator -->
     <div v-if="loading" class="d-flex justify-center">
       <VProgressCircular :size="40" color="primary" indeterminate />
     </div>
-     <!-- Main content -->
+    <!-- Main content -->
     <div v-else>
-       <!-- Add new employee button -->
+      <!-- Add new employee button -->
       <div class="d-flex justify-end ma-3">
         <VBtn prepend-icon="tabler-plus" @click="openAddNewCompanyDrawer(null)">
           Add New Employee
@@ -361,9 +399,9 @@ onMounted(() => {
           </VCol>
         </VRow>
         <!-- Filter select -->
-        <div class="filter-select" style="width: 30%;" v-if="checkUser">
+        <div class="filter-select" style="width: 30%" v-if="checkUser">
           <AppSelect
-          v-model="selectedFilter"
+            v-model="selectedFilter"
             :items="items"
             clearable
             clear-icon="tabler-x"
@@ -371,9 +409,9 @@ onMounted(() => {
             placeholder="show All Companies"
           />
         </div>
-      </div>  
+      </div>
 
-       <!-- Data table -->
+      <!-- Data table -->
       <VDataTable :headers="headers" :items="userList" :items-per-page="10">
         <template #item.name="{ item }">
           <div class="d-flex align-center">
@@ -399,7 +437,7 @@ onMounted(() => {
             </div>
           </div>
         </template>
-        
+
         <template #item.company_email="{ item }">
           <span>{{ item.raw.company_email }}</span>
         </template>

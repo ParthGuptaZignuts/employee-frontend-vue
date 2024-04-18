@@ -242,29 +242,9 @@ watch(search, () => {
   debouncedSearch();
 });
 
-//  watcher for search input 
-watch(search, async (newValue, oldValue) => {
-  if (newValue !== oldValue) {
-    try {
-      const token = localStorage.getItem("token");
-
-      const config = {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      };
-
-      const response = await axios.get(`/jobs?search=${newValue}`, config);
-      userList.value = response.data;
-    } catch (error) {
-      console.error("Failed to fetch company data:", error.message);
-    }
-  }
-});
-
-// Watcher for selected filter change
-watch(selectedFilter, async (newValue, oldValue) => {
-  if (newValue !== oldValue) {
+watch([search, selectedFilter], async ([searchValue, filterValue], [prevSearchValue, prevFilterValue]) => {
+  // Check if search value or filter value has changed
+  if (searchValue !== prevSearchValue || filterValue !== prevFilterValue) {
     try {
       const token = localStorage.getItem("token");
       const config = {
@@ -272,15 +252,22 @@ watch(selectedFilter, async (newValue, oldValue) => {
           Authorization: `Bearer ${token}`,
         },
       };
-      let response;
-      if(newValue === null) {
-        response = await axios.get(`/jobs`, config);
-      } else {
-        response = await axios.get(`/jobs?employment_type=${newValue}`, config);
+
+      let apiUrl = "/jobs";
+      const params = {};
+      
+      if (searchValue) {
+        params.search = searchValue;
       }
+
+      if (filterValue) {
+        params.employment_type = filterValue;
+      }
+
+      const response = await axios.get(apiUrl, { params, ...config });
       userList.value = response.data;
     } catch (error) {
-      console.error("Failed to fetch company data:", error.message);
+      console.error("Failed to fetch job data:", error.message);
     }
   }
 });
