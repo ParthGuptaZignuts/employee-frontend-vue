@@ -77,16 +77,7 @@ const resolveStatusVariant = (status) => {
 const openAddNewCompanyDrawer = async (companyData) => {
   if (companyData) {
     try {
-      const token = localStorage.getItem("token");
-
-      const config = {
-        headers: {
-          Authorization: `Bearer ${token}`,
-          "content-type": "multipart/form-data",
-        },
-      };
-
-      const response = await axios.get(`/companies/${companyData.id}`, config);
+      const response = await axios.get(`/companies/${companyData.id}`);
 
       editCompanyData.value = response.data.data;
       if (editCompanyData.value) {
@@ -123,16 +114,9 @@ const isSubmitEnabled = computed(() => permentDelete.value || tempDelete.value);
 const deleteItemConfirm = async () => {
   if (isSubmitEnabled.value) {
     try {
-      const token = localStorage.getItem("token");
-      const config = {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      };
       await axios.post(
         `/companies/delete/${deleteItemId.value}`,
-        { force_delete: permentDelete.value },
-        config
+        { force_delete: permentDelete.value }
       );
       userList.value = userList.value.filter(
         (company) => company.id !== deleteItemId.value
@@ -188,14 +172,7 @@ const handleNewUserData = (userData) => {
 const fetchData = async () => {
   loading.value = true;
   try {
-    const token = localStorage.getItem("token");
-
-    const config = {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    };
-    const response = await axios.get("/companies", config);
+    const response = await axios.get("/companies");
     userList.value = response.data.data;
   } catch (error) {
     console.error("Failed to fetch company data:", error.message);
@@ -225,14 +202,7 @@ watch(search, () => {
 watch([search, selectedFilter], async ([searchValue, filterValue], [prevSearchValue, prevFilterValue]) => {
   // Check if search value or filter value has changed
   if (searchValue !== prevSearchValue || filterValue !== prevFilterValue) {
-    try {
-      const token = localStorage.getItem("token");
-      const config = {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      };
-      
+    try {      
       let status = null;
       if (filterValue === "Active Companies") {
         status = "A";
@@ -240,7 +210,7 @@ watch([search, selectedFilter], async ([searchValue, filterValue], [prevSearchVa
         status = "I";
       }
 
-      const response = await axios.get(`/companies?search=${searchValue}&status=${status}`, config);
+      const response = await axios.get(`/companies?search=${searchValue}&status=${status}`);
       userList.value = response.data.data;
     } catch (error) {
       console.error("Failed to fetch company data:", error.message);

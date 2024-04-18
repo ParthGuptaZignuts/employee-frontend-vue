@@ -177,14 +177,7 @@ const addNewUser = async (userData) => {
       formData.append("logo", userData.logo);
     }
 
-    const config = {
-      headers: {
-        Authorization: `Bearer ${token}`,
-        "Content-Type": "multipart/form-data",
-      },
-    };
-
-    const response = await axios.post("/companies/create", formData, config);
+    const response = await axios.post("/companies/create", formData);
     emit("userData", response.data);
     closeNavigationDrawer();
   } catch (error) {
@@ -213,17 +206,10 @@ const editUser = async (userData) => {
       formData.append("logo", userData.logo);
     }
 
-    const config = {
-      headers: {
-        Authorization: `Bearer ${token}`,
-        "Content-Type": "multipart/form-data",
-      },
-    };
 
     const response = await axios.post(
       `/companies/${company_id}`,
       formData,
-      config
     );
     emit("userData", response.data);
 
