@@ -188,22 +188,26 @@ const handleNewUserData = async (employeeData) => {
         employeeData,
         config
       );
-      toast("Employee Updated successfully", {
-        theme: "auto",
-        type: "success",
-        pauseOnHover: false,
-        pauseOnFocusLoss: false,
-        dangerouslyHTMLString: true,
-      });
+      if (response) {
+        toast("Employee Updated successfully", {
+          theme: "auto",
+          type: "success",
+          pauseOnHover: false,
+          pauseOnFocusLoss: false,
+          dangerouslyHTMLString: true,
+        });
+      }
     } else {
       let response = await axios.post("employee/create", employeeData, config);
-      toast("Employee Created Successfully", {
-        theme: "auto",
-        type: "success",
-        pauseOnHover: false,
-        pauseOnFocusLoss: false,
-        dangerouslyHTMLString: true,
-      });
+      if (response) {
+        toast("Employee Created Successfully", {
+          theme: "auto",
+          type: "success",
+          pauseOnHover: false,
+          pauseOnFocusLoss: false,
+          dangerouslyHTMLString: true,
+        });
+      }
     }
 
     fetchData();
@@ -275,52 +279,6 @@ const fetchCompanyNames = async () => {
 watch(search, () => {
   debouncedSearch();
 });
-
-// watcher for search input
-// watch(search, async (newValue, oldValue) => {
-//   // Only send a request if the search term has changed
-//   if (newValue !== oldValue) {
-//     try {
-//       const token = localStorage.getItem("token");
-
-//       const config = {
-//         headers: {
-//           Authorization: `Bearer ${token}`,
-//         },
-//       };
-
-//       const response = await axios.get(`/employees?search=${newValue}`, config);
-//       userList.value = response.data.data;
-//     } catch (error) {
-//       console.error("Failed to fetch company data:", error.message);
-//     }
-//   }
-// });
-
-// Watcher for selected filter change
-// watch(selectedFilter, async (newValue, oldValue) => {
-//   if (newValue !== oldValue) {
-//     try {
-//       if (!newValue) {
-//         await fetchData();
-//       } else {
-//         const selectedCompany = companyOptions.value.find(company => company.name === newValue);
-//         if (selectedCompany) {
-//           const token = localStorage.getItem("token");
-//           const config = {
-//             headers: {
-//               Authorization: `Bearer ${token}`,
-//             },
-//           };
-//           const response = await axios.get(`/employees?search_filter=${selectedCompany.id}`, config);
-//           userList.value = response.data.data;
-//         }
-//       }
-//     } catch (error) {
-//       console.error("Failed to fetch employee data:", error.message);
-//     }
-//   }
-// });
 
 watch(
   [search, selectedFilter],

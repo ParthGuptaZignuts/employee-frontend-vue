@@ -22,13 +22,13 @@ const tempDelete = ref(false);
 const loading = ref(false);
 const search = ref("");
 const items = [
-  'Full Time',
-  'Part Time',
-  'Hybrid',
-  'Work From Home',
-  'Work From Office',
-  'Internship',
-]
+  "Full Time",
+  "Part Time",
+  "Hybrid",
+  "Work From Home",
+  "Work From Office",
+  "Internship",
+];
 const selectedFilter = ref(null);
 
 // headers
@@ -50,8 +50,8 @@ const headers = [
     key: "experience_required",
   },
   {
-    title:"Skills Required",
-    key: "skills_required"
+    title: "Skills Required",
+    key: "skills_required",
   },
   {
     title: "Posted On",
@@ -176,22 +176,26 @@ const handleNewUserData = async (employeeData) => {
         employeeData,
         config
       );
-      toast("Job Updated successfully", {
-      theme: "auto",
-      type: "success",
-      pauseOnHover: false,
-      pauseOnFocusLoss: false,
-      dangerouslyHTMLString: true,
-    });
+      if (response) {
+        toast("Job Updated successfully", {
+          theme: "auto",
+          type: "success",
+          pauseOnHover: false,
+          pauseOnFocusLoss: false,
+          dangerouslyHTMLString: true,
+        });
+      }
     } else {
       let response = await axios.post("job/create", employeeData, config);
-      toast("Job Created Successfully", {
-      theme: "auto",
-      type: "success",
-      pauseOnHover: false,
-      pauseOnFocusLoss: false,
-      dangerouslyHTMLString: true,
-    });
+      if (response) {
+        toast("Job Created Successfully", {
+          theme: "auto",
+          type: "success",
+          pauseOnHover: false,
+          pauseOnFocusLoss: false,
+          dangerouslyHTMLString: true,
+        });
+      }
     }
 
     fetchData();
@@ -204,7 +208,7 @@ const handleNewUserData = async (employeeData) => {
   }
 };
 
-// Function to fetch data call an api 
+// Function to fetch data call an api
 const fetchData = async () => {
   loading.value = true;
   try {
@@ -242,37 +246,40 @@ watch(search, () => {
   debouncedSearch();
 });
 
-watch([search, selectedFilter], async ([searchValue, filterValue], [prevSearchValue, prevFilterValue]) => {
-  // Check if search value or filter value has changed
-  if (searchValue !== prevSearchValue || filterValue !== prevFilterValue) {
-    try {
-      const token = localStorage.getItem("token");
-      const config = {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      };
+watch(
+  [search, selectedFilter],
+  async ([searchValue, filterValue], [prevSearchValue, prevFilterValue]) => {
+    // Check if search value or filter value has changed
+    if (searchValue !== prevSearchValue || filterValue !== prevFilterValue) {
+      try {
+        const token = localStorage.getItem("token");
+        const config = {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        };
 
-      let apiUrl = "/jobs";
-      const params = {};
-      
-      if (searchValue) {
-        params.search = searchValue;
+        let apiUrl = "/jobs";
+        const params = {};
+
+        if (searchValue) {
+          params.search = searchValue;
+        }
+
+        if (filterValue) {
+          params.employment_type = filterValue;
+        }
+
+        const response = await axios.get(apiUrl, { params, ...config });
+        userList.value = response.data;
+      } catch (error) {
+        console.error("Failed to fetch job data:", error.message);
       }
-
-      if (filterValue) {
-        params.employment_type = filterValue;
-      }
-
-      const response = await axios.get(apiUrl, { params, ...config });
-      userList.value = response.data;
-    } catch (error) {
-      console.error("Failed to fetch job data:", error.message);
     }
   }
-});
+);
 
-// Fetch data on component mount 
+// Fetch data on component mount
 onMounted(() => {
   fetchData();
 });
@@ -293,7 +300,7 @@ onMounted(() => {
 
       <!-- search bar -->
       <div class="search-container d-flex align-center">
-        <div class="search-input" style="width: 70%;">
+        <div class="search-input" style="width: 70%">
           <VTextField
             v-model="search"
             label="Search"
@@ -304,9 +311,9 @@ onMounted(() => {
           />
         </div>
         <!-- filter search -->
-        <div class="filter-select" style="width: 30%;">
+        <div class="filter-select" style="width: 30%">
           <AppSelect
-          v-model="selectedFilter"
+            v-model="selectedFilter"
             :items="items"
             clearable
             clear-icon="tabler-x"
