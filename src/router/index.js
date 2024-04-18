@@ -10,5 +10,18 @@ const router = createRouter({
   
 })
 
+router.beforeEach((to, from, next) => {
+  const token = localStorage.getItem('token');
+  const isvalid = token !== null;
+
+  if (to.path !== '/login' && !isvalid) {
+    next('/login');
+  } else if (to.path === '/login' && isvalid) {
+    next('/');
+  } else {
+    next(); 
+  }
+});
+
 // Docs: https://router.vuejs.org/guide/advanced/navigation-guards.html#global-before-guards
 export default router
