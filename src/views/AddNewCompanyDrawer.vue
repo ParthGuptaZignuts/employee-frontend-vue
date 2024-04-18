@@ -38,16 +38,19 @@ const adminDOB = ref(null);
 const adminJoiningDate = ref(null);
 
 const isDateFilled = computed(() => adminDOB.value !== null);
-const isJoiningDateFilled = computed(() => adminJoiningDate.value!== null);
+const isJoiningDateFilled = computed(() => adminJoiningDate.value !== null);
 
 const mode = ref("add");
 
 const closeNavigationDrawer = () => {
   emit("update:isDrawerOpen", false);
+  refForm.value.reset();
+  resetFormValidation(); // Reset form validation state
+  resetFormFields(); // Reset form fields
   nextTick(() => {
     refForm.value.reset();
     resetFormValidation(); // Reset form validation state
-    resetFormFields(); // Reset form fields
+    resetFormFields();
   });
 };
 
@@ -98,7 +101,6 @@ const switchMode = (newMode) => {
   }
 };
 
-
 const onSubmit = () => {
   refForm.value.validate().then(({ valid }) => {
     if (valid) {
@@ -136,18 +138,15 @@ const onSubmit = () => {
         addNewUser(userData);
       }
       closeNavigationDrawer();
-      setTimeout(()=>{
+      setTimeout(() => {
         nextTick(() => {
-        resetFormFields();
-        resetFormValidation();
-      });
-      },500);
-     
+          resetFormFields();
+          resetFormValidation();
+        });
+      }, 500);
     }
   });
 };
-
-
 
 const handleDrawerModelValueUpdate = (val) => {
   emit("update:isDrawerOpen", val);
@@ -236,7 +235,7 @@ const editUser = async (userData) => {
 
 if (props.companyData) {
   const { name, email, website, address, status, admin, logo } =
-  props.companyData;
+    props.companyData;
   companyName.value = name;
   companyEmail.value = email;
   companyWebsite.value = website;
@@ -280,172 +279,172 @@ watch(
 
 <template>
   <div>
-  <VNavigationDrawer
-    temporary
-    :width="400"
-    location="end"
-    class="scrollable-content"
-    :model-value="props.isDrawerOpen"
-    @update:model-value="handleDrawerModelValueUpdate"
-  >
-    <!-- 👉 Title -->
-    <AppDrawerHeaderSection
-      :title="mode === 'add' ? 'Add Company' : 'Edit Company'"
-      @cancel="closeNavigationDrawer"
-    />
+    <VNavigationDrawer
+      temporary
+      :width="400"
+      location="end"
+      class="scrollable-content"
+      :model-value="props.isDrawerOpen"
+      @update:model-value="handleDrawerModelValueUpdate"
+    >
+      <!-- 👉 Title -->
+      <AppDrawerHeaderSection
+        :title="mode === 'add' ? 'Add Company' : 'Edit Company'"
+        @cancel="closeNavigationDrawer"
+      />
 
-    <PerfectScrollbar :options="{ wheelPropagation: false }">
-      <VCard flat>
-        <VCardText>
-          <!-- 👉 Form -->
-          <VForm
-            ref="refForm"
-            v-model="isFormValid"
-            @submit.prevent="onSubmit"
-            enctype="multipart/form-data"
-          >
-            <VRow>
-              <!-- 👉 Company Name -->
-              <VCol cols="12">
-                <AppTextField
-                  v-model="companyName"
-                  :rules="[requiredValidator]"
-                  label="Company Name"
-                />
-              </VCol>
+      <PerfectScrollbar :options="{ wheelPropagation: false }">
+        <VCard flat>
+          <VCardText>
+            <!-- 👉 Form -->
+            <VForm
+              ref="refForm"
+              v-model="isFormValid"
+              @submit.prevent="onSubmit"
+              enctype="multipart/form-data"
+            >
+              <VRow>
+                <!-- 👉 Company Name -->
+                <VCol cols="12">
+                  <AppTextField
+                    v-model="companyName"
+                    :rules="[requiredValidator]"
+                    label="Company Name"
+                  />
+                </VCol>
 
-              <!-- 👉 Company Email -->
-              <VCol cols="12">
-                <AppTextField
-                  v-model="companyEmail"
-                  :rules="[requiredValidator, emailValidator]"
-                  label="Company Email"
-                />
-              </VCol>
+                <!-- 👉 Company Email -->
+                <VCol cols="12">
+                  <AppTextField
+                    v-model="companyEmail"
+                    :rules="[requiredValidator, emailValidator]"
+                    label="Company Email"
+                  />
+                </VCol>
 
-              <!-- 👉 Company Website -->
-              <VCol cols="12">
-                <AppTextField
-                  v-model="companyWebsite"
-                  :rules="[requiredValidator]"
-                  label="Company Website"
-                />
-              </VCol>
+                <!-- 👉 Company Website -->
+                <VCol cols="12">
+                  <AppTextField
+                    v-model="companyWebsite"
+                    :rules="[requiredValidator]"
+                    label="Company Website"
+                  />
+                </VCol>
 
-              <!-- 👉 Company Logo -->
-              <VCol cols="12">
-                <Input
-                  type="file"
-                  label="Upload logo"
-                  prepend-icon="tabler-camera"
-                  accept="image/*"
-                  @change="handleFileUpload"
-                />
-              </VCol>
+                <!-- 👉 Company Logo -->
+                <VCol cols="12">
+                  <Input
+                    type="file"
+                    label="Upload logo"
+                    prepend-icon="tabler-camera"
+                    accept="image/*"
+                    @change="handleFileUpload"
+                  />
+                </VCol>
 
-              <!-- 👉 Company Address -->
-              <VCol cols="12">
-                <AppTextField
-                  v-model="companyAddress"
-                  :rules="[requiredValidator]"
-                  label="Company Address"
-                />
-              </VCol>
+                <!-- 👉 Company Address -->
+                <VCol cols="12">
+                  <AppTextField
+                    v-model="companyAddress"
+                    :rules="[requiredValidator]"
+                    label="Company Address"
+                  />
+                </VCol>
 
-              <!-- 👉 Company Status -->
-              <VCol cols="12">
-                <AppSelect
-                  v-model="companyStatus"
-                  label="Company Status"
-                  :rules="[requiredValidator]"
-                  :items="['Active', 'Inactive']"
-                />
-              </VCol>
+                <!-- 👉 Company Status -->
+                <VCol cols="12">
+                  <AppSelect
+                    v-model="companyStatus"
+                    label="Company Status"
+                    :rules="[requiredValidator]"
+                    :items="['Active', 'Inactive']"
+                  />
+                </VCol>
 
-              <!-- 👉 Admin First Name -->
-              <VCol cols="12">
-                <AppTextField
-                  v-model="adminFirstName"
-                  :rules="[requiredValidator]"
-                  label="Admin First Name"
-                />
-              </VCol>
+                <!-- 👉 Admin First Name -->
+                <VCol cols="12">
+                  <AppTextField
+                    v-model="adminFirstName"
+                    :rules="[requiredValidator]"
+                    label="Admin First Name"
+                  />
+                </VCol>
 
-              <!-- 👉 Admin Last Name -->
-              <VCol cols="12">
-                <AppTextField
-                  v-model="adminLastName"
-                  :rules="[requiredValidator]"
-                  label="Admin Last Name"
-                />
-              </VCol>
+                <!-- 👉 Admin Last Name -->
+                <VCol cols="12">
+                  <AppTextField
+                    v-model="adminLastName"
+                    :rules="[requiredValidator]"
+                    label="Admin Last Name"
+                  />
+                </VCol>
 
-              <!-- 👉 Admin Email -->
-              <VCol cols="12">
-                <AppTextField
-                  v-model="adminEmail"
-                  :rules="[requiredValidator, emailValidator]"
-                  label="Admin Email"
-                />
-              </VCol>
+                <!-- 👉 Admin Email -->
+                <VCol cols="12">
+                  <AppTextField
+                    v-model="adminEmail"
+                    :rules="[requiredValidator, emailValidator]"
+                    label="Admin Email"
+                  />
+                </VCol>
 
-              <!-- 👉 Admin Address -->
-              <VCol cols="12">
-                <AppTextField
-                  v-model="adminAddress"
-                  :rules="[requiredValidator]"
-                  label="Admin Address"
-                />
-              </VCol>
+                <!-- 👉 Admin Address -->
+                <VCol cols="12">
+                  <AppTextField
+                    v-model="adminAddress"
+                    :rules="[requiredValidator]"
+                    label="Admin Address"
+                  />
+                </VCol>
 
-              <!-- 👉 Admin City -->
-              <VCol cols="12">
-                <AppTextField
-                  v-model="adminCity"
-                  :rules="[requiredValidator]"
-                  label="Admin City"
-                />
-              </VCol>
+                <!-- 👉 Admin City -->
+                <VCol cols="12">
+                  <AppTextField
+                    v-model="adminCity"
+                    :rules="[requiredValidator]"
+                    label="Admin City"
+                  />
+                </VCol>
 
-              <!-- 👉 Admin Date of Birth -->
-              <VCol cols="12">
-                <AppDateTimePicker
-                  v-model="adminDOB"
-                  placeholder="YYYY-MM-DD"
-                  :config="{ dateFormat: 'Y-m-d', maxDate: new Date() }"
-                  label="Date of Birth"
-                  :rules="[v => !!v || 'Date is required']"
-                />
-              </VCol>
+                <!-- 👉 Admin Date of Birth -->
+                <VCol cols="12">
+                  <AppDateTimePicker
+                    v-model="adminDOB"
+                    placeholder="YYYY-MM-DD"
+                    :config="{ dateFormat: 'Y-m-d', maxDate: new Date() }"
+                    label="Date of Birth"
+                    :rules="[(v) => !!v || 'Date is required']"
+                  />
+                </VCol>
 
-              <!-- 👉 Admin Joining Date -->
-              <VCol cols="12">
-                <AppDateTimePicker
-                  v-model="adminJoiningDate"
-                  placeholder="YYYY-MM-DD"
-                  :config="{ dateFormat: 'Y-m-d', maxDate: new Date() }"
-                  label="Admin Joining Date"
-                  :rules="[x => !!x || 'Date is required']"
-                />
-              </VCol>
-              <VDivider />
-              <!-- 👉 Submit and Cancel -->
-              <VCol cols="12">
-                <VBtn type="submit" class="me-3"> Submit </VBtn>
-                <VBtn
-                  type="reset"
-                  variant="tonal"
-                  color="secondary"
-                  @click="closeNavigationDrawer"
-                >
-                  Cancel
-                </VBtn>
-              </VCol>
-            </VRow>
-          </VForm>
-        </VCardText>
-      </VCard>
-    </PerfectScrollbar>
-  </VNavigationDrawer>
-</div>
+                <!-- 👉 Admin Joining Date -->
+                <VCol cols="12">
+                  <AppDateTimePicker
+                    v-model="adminJoiningDate"
+                    placeholder="YYYY-MM-DD"
+                    :config="{ dateFormat: 'Y-m-d', maxDate: new Date() }"
+                    label="Admin Joining Date"
+                    :rules="[(x) => !!x || 'Date is required']"
+                  />
+                </VCol>
+                <VDivider />
+                <!-- 👉 Submit and Cancel -->
+                <VCol cols="12">
+                  <VBtn type="submit" class="me-3"> Submit </VBtn>
+                  <VBtn
+                    type="reset"
+                    variant="tonal"
+                    color="secondary"
+                    @click="closeNavigationDrawer"
+                  >
+                    Cancel
+                  </VBtn>
+                </VCol>
+              </VRow>
+            </VForm>
+          </VCardText>
+        </VCard>
+      </PerfectScrollbar>
+    </VNavigationDrawer>
+  </div>
 </template>
