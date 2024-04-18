@@ -75,18 +75,55 @@ watch(
   }
 );
 
+// const onSubmit = async () => {
+//   try {
+//     let validate = await refForm.value?.validate();
+//     if (validate.valid) {
+//       if (new Date(JoiningDate.value) < new Date(DOB.value)) {
+//         toast("Joining Date cannot be before Date of Birth", {
+//         theme: "auto",
+//         type: "error",
+//         pauseOnHover: false,
+//         pauseOnFocusLoss: false,
+//         dangerouslyHTMLString: true,
+//       });
+//         return;
+//       }
+//       const formData = {
+//         first_name: FirstName.value,
+//         last_name: LastName.value,
+//         email: Email.value,
+//         address: Address.value,
+//         city: City.value,
+//         dob: DOB.value,
+//         joining_date: JoiningDate.value,
+//         company_id: CompanyId.value,
+//       };
+//       emit("employeeData", formData);
+//     }
+//     closeNavigationDrawer();
+//     nextTick(() => {
+//       clearForm();
+//     });
+//   } 
+  
+//   catch (error) {
+//     console.error("Error:", error.message);
+//   }
+// };
+
 const onSubmit = async () => {
   try {
     let validate = await refForm.value?.validate();
     if (validate.valid) {
       if (new Date(JoiningDate.value) < new Date(DOB.value)) {
         toast("Joining Date cannot be before Date of Birth", {
-        theme: "auto",
-        type: "error",
-        pauseOnHover: false,
-        pauseOnFocusLoss: false,
-        dangerouslyHTMLString: true,
-      });
+          theme: "auto",
+          type: "error",
+          pauseOnHover: false,
+          pauseOnFocusLoss: false,
+          dangerouslyHTMLString: true,
+        });
         return;
       }
       const formData = {
@@ -100,11 +137,19 @@ const onSubmit = async () => {
         company_id: CompanyId.value,
       };
       emit("employeeData", formData);
+      closeNavigationDrawer();
+      nextTick(() => {
+        clearForm();
+      });
+    } else {
+      toast("Please fill in all required fields.", {
+        theme: "auto",
+        type: "error",
+        pauseOnHover: false,
+        pauseOnFocusLoss: false,
+        dangerouslyHTMLString: true,
+      });
     }
-    closeNavigationDrawer();
-    nextTick(() => {
-      clearForm();
-    });
   } catch (error) {
     console.error("Error:", error.message);
   }
