@@ -90,13 +90,7 @@ const resolveStatusVariant = (status) => {
 const openAddNewCompanyDrawer = async (employeeData) => {
   if (employeeData) {
     try {
-      const token = localStorage.getItem("token");
-      const config = {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      };
-      const response = await axios.get(`/employee/${employeeData.id}`, config);
+      const response = await axios.get(`/employee/${employeeData.id}`);
       editCompanyData.value = response.data.data;
       if (editCompanyData.value) {
         isEditMode.value = true;
@@ -132,17 +126,9 @@ const isSubmitEnabled = computed(() => permentDelete.value || tempDelete.value);
 const deleteItemConfirm = async () => {
   if (isSubmitEnabled.value) {
     try {
-      const token = localStorage.getItem("token");
-      const config = {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      };
-
       await axios.post(
         `/employee/${deleteItemId.value}`,
-        { permanent_delete: permentDelete.value },
-        config
+        { permanent_delete: permentDelete.value }
       );
 
       userList.value = userList.value.filter(
@@ -174,19 +160,10 @@ const deleteItemConfirm = async () => {
 const handleNewUserData = async (employeeData) => {
   try {
     loading.value = true;
-
-    const token = localStorage.getItem("token");
-
-    const config = {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    };
     if (isEditMode.value) {
       let response = await axios.post(
         `/employee/update/${editCompanyData.value.id}`,
-        employeeData,
-        config
+        employeeData
       );
       if (response) {
         toast("Employee Updated successfully", {
@@ -198,7 +175,7 @@ const handleNewUserData = async (employeeData) => {
         });
       }
     } else {
-      let response = await axios.post("employee/create", employeeData, config);
+      let response = await axios.post("employee/create", employeeData);
       if (response) {
         toast("Employee Created Successfully", {
           theme: "auto",
@@ -224,14 +201,7 @@ const handleNewUserData = async (employeeData) => {
 const fetchData = async () => {
   loading.value = true;
   try {
-    const token = localStorage.getItem("token");
-
-    const config = {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    };
-    const response = await axios.get("/employees", config);
+    const response = await axios.get("/employees");
     userList.value = response.data.data;
   } catch (error) {
     console.error("Failed to fetch company data:", error.message);
@@ -256,15 +226,7 @@ const debouncedSearch = debounce(() => {
 // function to fetch companies
 const fetchCompanyNames = async () => {
   try {
-    const token = localStorage.getItem("token");
-
-    const config = {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    };
-
-    const response = await axios.get("getallcompanies", config);
+    const response = await axios.get("getallcompanies");
     items.value = response.data.map((company) => company.name);
     companyOptions.value = response.data.map((company) => ({
       id: company.id,
