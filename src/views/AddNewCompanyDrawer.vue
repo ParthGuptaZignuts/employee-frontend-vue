@@ -37,6 +37,9 @@ const adminCity = ref("");
 const adminDOB = ref(null);
 const adminJoiningDate = ref(null);
 
+const isDateFilled = computed(() => adminDOB.value !== null);
+const isJoiningDateFilled = computed(() => adminJoiningDate.value!== null);
+
 const mode = ref("add");
 
 const closeNavigationDrawer = () => {
@@ -411,6 +414,7 @@ watch(
                   placeholder="YYYY-MM-DD"
                   :config="{ dateFormat: 'Y-m-d', maxDate: new Date() }"
                   label="Date of Birth"
+                  :rules="[v => !!v || 'Date is required']"
                 />
               </VCol>
 
@@ -421,6 +425,7 @@ watch(
                   placeholder="YYYY-MM-DD"
                   :config="{ dateFormat: 'Y-m-d', maxDate: new Date() }"
                   label="Admin Joining Date"
+                  :rules="[x => !!x || 'Date is required']"
                 />
               </VCol>
               <VDivider />
