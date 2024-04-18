@@ -1,4 +1,5 @@
 <script setup>
+// import necessary modules and components
 import { avatarText } from "@/@core/utils/formatters";
 import AddNewJobDrawer from "../views/AddNewJobDrawer.vue";
 import { onMounted, ref } from "vue";
@@ -9,6 +10,7 @@ import { toast } from "vue3-toastify";
 import "vue3-toastify/dist/index.css";
 import { debounce } from "lodash";
 
+// Reactive variables and references
 const deleteDialog = ref(false);
 const isAddNewCompanyDrawerVisible = ref(false);
 const editCompanyData = ref(null);
@@ -69,6 +71,7 @@ const headers = [
   },
 ];
 
+// Function to open add new job drawer
 const openAddNewCompanyDrawer = async (employeeData) => {
   console.log(employeeData);
   if (employeeData) {
@@ -95,20 +98,23 @@ const openAddNewCompanyDrawer = async (employeeData) => {
   }
 };
 
+// Function to delete item
 const deleteItem = (item) => {
   deleteItemId.value = item;
   deleteDialog.value = true;
 };
 
+// Function to close delete dialog
 const closeDelete = () => {
   deleteDialog.value = false;
   permentDelete.value = false;
   tempDelete.value = false;
 };
 
+// Computed property to check if submit button is enabled
 const isSubmitEnabled = computed(() => permentDelete.value || tempDelete.value);
 
-
+// Function to confirm deletion of item
 const deleteItemConfirm = async () => {
   if (isSubmitEnabled.value) {
     try {
@@ -152,7 +158,7 @@ const deleteItemConfirm = async () => {
     }
   }
 };
-
+// Function to handle new job data
 const handleNewUserData = async (employeeData) => {
   try {
     loading.value = true;
@@ -198,6 +204,7 @@ const handleNewUserData = async (employeeData) => {
   }
 };
 
+// Function to fetch data call an api 
 const fetchData = async () => {
   loading.value = true;
   try {
@@ -216,6 +223,7 @@ const fetchData = async () => {
   loading.value = false;
 };
 
+// Function to handle delete option change
 const handleDeleteOptionChange = (option) => {
   if (option === "permanent") {
     tempDelete.value = false;
@@ -224,14 +232,17 @@ const handleDeleteOptionChange = (option) => {
   }
 };
 
+// Debounced search function
 const debouncedSearch = debounce(() => {
   console.log("Searching for:", search.value);
 }, 500);
 
+// Watcher for search input
 watch(search, () => {
   debouncedSearch();
 });
 
+//  watcher for search input 
 watch(search, async (newValue, oldValue) => {
   if (newValue !== oldValue) {
     try {
@@ -251,6 +262,7 @@ watch(search, async (newValue, oldValue) => {
   }
 });
 
+// Watcher for selected filter change
 watch(selectedFilter, async (newValue, oldValue) => {
   if (newValue !== oldValue) {
     try {
@@ -273,12 +285,13 @@ watch(selectedFilter, async (newValue, oldValue) => {
   }
 });
 
-
+// Fetch data on component mount 
 onMounted(() => {
   fetchData();
 });
 </script>
 
+<!-- Template section -->
 <template>
   <div>
     <div v-if="loading" class="d-flex justify-center">
@@ -291,6 +304,7 @@ onMounted(() => {
         </VBtn>
       </div>
 
+      <!-- search bar -->
       <div class="search-container d-flex align-center">
         <div class="search-input" style="width: 70%;">
           <VTextField
@@ -302,6 +316,7 @@ onMounted(() => {
             placeholder="Search Jobs by Title"
           />
         </div>
+        <!-- filter search -->
         <div class="filter-select" style="width: 30%;">
           <AppSelect
           v-model="selectedFilter"
@@ -314,6 +329,7 @@ onMounted(() => {
         </div>
       </div>
 
+      <!-- data table -->
       <VDataTable :headers="headers" :items="userList" :items-per-page="10">
         <template #item.name="{ item }">
           <div class="d-flex align-center">
@@ -372,6 +388,7 @@ onMounted(() => {
         </template>
       </VDataTable>
     </div>
+    <!-- dialog to delete the items -->
     <VDialog v-model="deleteDialog" max-width="500px">
       <VCard>
         <VCardTitle class="text-center d-flex align-center justify-center mb-3">
@@ -410,6 +427,7 @@ onMounted(() => {
         </VCardActions>
       </VCard>
     </VDialog>
+    <!-- job drawer -->
     <AddNewJobDrawer
       v-model:isEmployeeDrawerOpen="isAddNewCompanyDrawerVisible"
       :employee-data="editCompanyData"

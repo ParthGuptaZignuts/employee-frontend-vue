@@ -1,5 +1,5 @@
 <script setup>
-// Importing necessary functions and components
+// Importing necessary modules and components
 import { avatarText } from "@/@core/utils/formatters";
 import AddNewEmployeeDrawer from "../views/AddNewEmployeeDrawer.vue";
 import { onMounted, ref } from "vue";
@@ -86,7 +86,7 @@ const resolveStatusVariant = (status) => {
   }
 };
 
-// Function to open add new company drawer
+// Function to open add new employee drawer
 const openAddNewCompanyDrawer = async (employeeData) => {
   if (employeeData) {
     try {
@@ -170,7 +170,7 @@ const deleteItemConfirm = async () => {
   }
 };
 
-// Function to handle new user data
+// Function to handle new employee data
 const handleNewUserData = async (employeeData) => {
   try {
     loading.value = true;
@@ -216,7 +216,7 @@ const handleNewUserData = async (employeeData) => {
   }
 };
 
-// Function to fetch data
+// Function to fetch data call an api 
 const fetchData = async () => {
   loading.value = true;
   try {
@@ -276,6 +276,7 @@ watch(search, () => {
   debouncedSearch();
 });
 
+// watcher for search input 
 watch(search, async (newValue, oldValue) => {
   // Only send a request if the search term has changed
   if (newValue !== oldValue) {
@@ -389,6 +390,7 @@ onMounted(() => {
               <span v-else>{{ avatarText(item.raw.name) }}</span>
             </VAvatar>
 
+            <!-- first name of employee -->
             <div class="d-flex flex-column ms-3">
               <span
                 class="d-block font-weight-medium text--primary text-truncate"
@@ -431,6 +433,7 @@ onMounted(() => {
         </template>
       </VDataTable>
     </div>
+    <!-- dialog for permanent delete and temperary delete -->
     <VDialog v-model="deleteDialog" max-width="500px">
       <VCard>
         <VCardTitle class="text-center d-flex align-center justify-center mb-3">
@@ -469,6 +472,7 @@ onMounted(() => {
         </VCardActions>
       </VCard>
     </VDialog>
+    <!-- employee side drawer -->
     <AddNewEmployeeDrawer
       v-model:isEmployeeDrawerOpen="isAddNewCompanyDrawerVisible"
       :employee-data="editCompanyData"

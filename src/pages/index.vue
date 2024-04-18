@@ -1,11 +1,14 @@
 <script setup>
+// importing necessary libraries
 import { computed, onMounted, ref } from "vue";
 import axios from "../axiosFile.js";
 
+// constants
 const userData = ref(null);
 const isLoading = ref(false);
 const error = ref(null);
 
+// function to call api
 const fetchData = async () => {
   try {
     const token = localStorage.getItem("token");
@@ -29,9 +32,13 @@ const fetchData = async () => {
     isLoading.value = false;
   }
 };
+
+// getting user type from local storage
 const userType = localStorage.getItem("type");
 
+// items to be shown on page
 const userListMeta = computed(() => {
+  // if user type is Super Admin show this items 
   if (userType === "SA")
     return [
       {
@@ -60,6 +67,7 @@ const userListMeta = computed(() => {
         subtitle: "Number of job opening currently active",
       },
     ];
+    // if user type is Company Admin show this items
   if (userType === "CA") {
     return [
       {
@@ -79,11 +87,13 @@ const userListMeta = computed(() => {
   }
 });
 
+//  Fetch data on component mount 
 onMounted(() => {
   fetchData();
 });
 </script>
 
+<!-- template section -->
 <template>  
   <div>
     <div>
