@@ -130,6 +130,7 @@ onMounted(() => {
   </div>
 </template>
 
+<!-- Scoped styles -->
 <style scoped>
 .fixed-height-card {
   height: 120px;

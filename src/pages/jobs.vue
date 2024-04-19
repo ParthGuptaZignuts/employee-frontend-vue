@@ -405,6 +405,7 @@ onMounted(() => {
   </div>
 </template>
 
+<!-- Scoped styles -->
 <style scoped>
 .search-container {
   display: flex;

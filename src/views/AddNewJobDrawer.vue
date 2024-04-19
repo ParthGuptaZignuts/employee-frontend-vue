@@ -387,7 +387,8 @@ onMounted(fetchCompanyNames);
 </div>
 </template>
 
-<style>
+<!-- Scoped styles -->
+<style scoped>
 .skills-grid {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
