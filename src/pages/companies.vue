@@ -363,8 +363,8 @@ onMounted(() => {
         <VBtn
           color="success"
           variant="elevated"
-          @click="deleteItemConfirm"
           :disabled="!isSubmitEnabled"
+          @click="deleteItemConfirm"
         >
           OK
         </VBtn>

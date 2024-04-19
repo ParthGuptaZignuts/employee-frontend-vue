@@ -126,10 +126,9 @@ const isSubmitEnabled = computed(() => permentDelete.value || tempDelete.value);
 const deleteItemConfirm = async () => {
   if (isSubmitEnabled.value) {
     try {
-      await axios.post(
-        `/employee/${deleteItemId.value}`,
-        { permanent_delete: permentDelete.value }
-      );
+      await axios.post(`/employee/${deleteItemId.value}`, {
+        permanent_delete: permentDelete.value,
+      });
 
       userList.value = userList.value.filter(
         (employee) => employee.id !== deleteItemId.value
@@ -418,8 +417,8 @@ onMounted(() => {
           <VBtn
             color="success"
             variant="elevated"
-            @click="deleteItemConfirm"
             :disabled="!isSubmitEnabled"
+            @click="deleteItemConfirm"
           >
             OK
           </VBtn>

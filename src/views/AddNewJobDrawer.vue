@@ -106,63 +106,6 @@ const skillsOptions = [
   },
 ];
 
-// Function to handle form submission
-// const onSubmit = async () => {
-//   try {
-//     let validate = await refForm.value?.validate();
-//     if (validate.valid) {
-//       if (new Date(ExpiresOn.value) < new Date(PostedOn.value)) {
-//         toast("Joining Date cannot be before Date of Birth", {
-//           theme: "auto",
-//           type: "error",
-//           pauseOnHover: false,
-//           pauseOnFocusLoss: false,
-//           dangerouslyHTMLString: true,
-//         });
-//         return;
-//       }
-//       if (Salary.value > 1000000) {
-//         toast("Enter the Valid value for Salary", {
-//           theme: "auto",
-//           type: "error",
-//           pauseOnHover: false,
-//           pauseOnFocusLoss: false,
-//           dangerouslyHTMLString: true,
-//         });
-//         return;
-//       }
-//       if (skillsRequired.value.length === 0) {
-//         toast("Please select at least one skill", {
-//           theme: "auto",
-//           type: "error",
-//           pauseOnHover: false,
-//           pauseOnFocusLoss: false,
-//           dangerouslyHTMLString: true,
-//         });
-//         return;
-//       }
-//       const formData = {
-//         title: Title.value,
-//         salary: Salary.value,
-//         employment_type: EmploymentStatus.value,
-//         experience_required: ExperienceRequired.value,
-//         posted_date: PostedOn.value,
-//         expiry_date: ExpiresOn.value,
-//         company_id: CompanyId.value,
-//         skills_required: skillsRequired.value.join(", "),
-//       };
-//       console.log(formData);
-//       emit("employeeData", formData);
-//     }
-//     closeNavigationDrawer();
-//     nextTick(() => {
-//       clearForm();
-//     });
-//   } catch (error) {
-//     console.error("Error:", error.message);
-//   }
-// };
-
 const onSubmit = async () => {
   try {
     let validate = await refForm.value?.validate();

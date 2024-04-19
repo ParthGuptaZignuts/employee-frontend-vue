@@ -1,4 +1,5 @@
 <script setup>
+// Import necessary validators
 import { emailValidator, requiredValidator } from "@validators";
 import { defineProps, defineEmits, onMounted, ref, watch, nextTick } from "vue";
 import { PerfectScrollbar } from "vue3-perfect-scrollbar";
@@ -6,6 +7,7 @@ import axios from "../axiosFile";
 import { toast } from "vue3-toastify";
 import "vue3-toastify/dist/index.css";
 
+// Define props and emits
 const props = defineProps({
   isEmployeeDrawerOpen: {
     type: Boolean,
@@ -18,6 +20,8 @@ const props = defineProps({
 });
 
 const emit = defineEmits(["update:isEmployeeDrawerOpen", "employeeData"]);
+
+// Define reactive variables
 const companyOptions = ref([]);
 const isFormValid = ref(false);
 const refForm = ref();
@@ -30,6 +34,7 @@ const DOB = ref(null);
 const JoiningDate = ref(null);
 const CompanyId = ref(null);
 
+// function to fetch company information 
 const fetchCompanyNames = async () => {
   try {
     const response = await axios.get("getallcompanies");
@@ -40,10 +45,12 @@ const fetchCompanyNames = async () => {
   }
 };
 
+// Function to handle model value update
 const handleDrawerModelValueUpdate = (val) => {
   emit("update:isEmployeeDrawerOpen", val);
 };
 
+// Function to clear the form
 const clearForm = () => {
   refForm.value?.reset();
   DOB.value = "";
@@ -51,11 +58,13 @@ const clearForm = () => {
   refForm.value?.resetValidation();
 };
 
+// fuction to close drawer
 const closeNavigationDrawer = () => {
   emit("update:isEmployeeDrawerOpen", false);
   clearForm();
 };
 
+// watcher to get employee data
 watch(
   () => props.employeeData,
   (newValue) => {
@@ -75,43 +84,7 @@ watch(
   }
 );
 
-// const onSubmit = async () => {
-//   try {
-//     let validate = await refForm.value?.validate();
-//     if (validate.valid) {
-//       if (new Date(JoiningDate.value) < new Date(DOB.value)) {
-//         toast("Joining Date cannot be before Date of Birth", {
-//         theme: "auto",
-//         type: "error",
-//         pauseOnHover: false,
-//         pauseOnFocusLoss: false,
-//         dangerouslyHTMLString: true,
-//       });
-//         return;
-//       }
-//       const formData = {
-//         first_name: FirstName.value,
-//         last_name: LastName.value,
-//         email: Email.value,
-//         address: Address.value,
-//         city: City.value,
-//         dob: DOB.value,
-//         joining_date: JoiningDate.value,
-//         company_id: CompanyId.value,
-//       };
-//       emit("employeeData", formData);
-//     }
-//     closeNavigationDrawer();
-//     nextTick(() => {
-//       clearForm();
-//     });
-//   } 
-  
-//   catch (error) {
-//     console.error("Error:", error.message);
-//   }
-// };
-
+// submit the form 
 const onSubmit = async () => {
   try {
     let validate = await refForm.value?.validate();
@@ -155,9 +128,11 @@ const onSubmit = async () => {
   }
 };
 
+// fetch company name details on mounted
 onMounted(fetchCompanyNames);
 </script>
 
+<!-- template section -->
 <template>
   <div>
   <VNavigationDrawer

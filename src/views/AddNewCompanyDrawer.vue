@@ -1,4 +1,5 @@
 <script setup>
+// Import necessary validators
 import { ref, defineProps, defineEmits, nextTick, watch } from "vue";
 import { PerfectScrollbar } from "vue3-perfect-scrollbar";
 import { emailValidator, requiredValidator } from "../@core/utils/validators";
@@ -6,6 +7,7 @@ import axios from "@/axiosFile.js";
 import { toast } from "vue3-toastify";
 import "vue3-toastify/dist/index.css";
 
+// Define props and emits
 const props = defineProps({
   isDrawerOpen: {
     type: Boolean,
@@ -19,9 +21,9 @@ const props = defineProps({
 
 const emit = defineEmits(["update:isDrawerOpen", "userData"]);
 
+// Define reactive variables
 const isFormValid = ref(false);
 const refForm = ref();
-
 const companyName = ref("");
 const companyEmail = ref("");
 const companyWebsite = ref("");
@@ -42,6 +44,7 @@ const isJoiningDateFilled = computed(() => adminJoiningDate.value !== null);
 
 const mode = ref("add");
 
+// function called the navigation drawer is closed
 const closeNavigationDrawer = () => {
   emit("update:isDrawerOpen", false);
   refForm.value.reset();
@@ -54,6 +57,7 @@ const closeNavigationDrawer = () => {
   });
 };
 
+// function to reset form value
 const resetFormFields = () => {
   companyName.value = "";
   companyEmail.value = "";
@@ -70,6 +74,7 @@ const resetFormFields = () => {
   adminJoiningDate.value = null;
 };
 
+// function to reset form validation
 const resetFormValidation = () => {
   isFormValid.value = true; // Reset validation state to true
   if (refForm.value) {
@@ -77,6 +82,7 @@ const resetFormValidation = () => {
   }
 };
 
+// function to check mode whether add or edit mode
 const switchMode = (newMode) => {
   mode.value = newMode;
   if (newMode === "add") {
@@ -101,6 +107,7 @@ const switchMode = (newMode) => {
   }
 };
 
+// on submit form 
 const onSubmit = () => {
   refForm.value.validate().then(({ valid }) => {
     if (valid) {
@@ -148,14 +155,17 @@ const onSubmit = () => {
   });
 };
 
+// drawer model value updation
 const handleDrawerModelValueUpdate = (val) => {
   emit("update:isDrawerOpen", val);
 };
 
+// function handle image upload
 const handleFileUpload = (e) => {
   companyLogo.value = e.target.files[0];
 };
 
+// function when new user is added 
 const addNewUser = async (userData) => {
   try {
     const token = localStorage.getItem("token");
@@ -185,6 +195,7 @@ const addNewUser = async (userData) => {
   }
 };
 
+// function for edit user 
 const editUser = async (userData) => {
   try {
     const token = localStorage.getItem("token");
@@ -237,6 +248,7 @@ if (props.companyData) {
   mode.value = "edit";
 }
 
+// watcher to put value into drawer
 watch(
   () => props.companyData,
   (newValue, oldValue) => {
@@ -263,6 +275,7 @@ watch(
 );
 </script>
 
+<!-- template section -->
 <template>
   <div>
     <VNavigationDrawer

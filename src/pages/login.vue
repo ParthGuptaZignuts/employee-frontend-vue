@@ -102,6 +102,7 @@ const handleSubmit = async () => {
 };
 </script>
 
+<!-- template section -->
 <template>
   <div>
     <VRow no-gutters class="auth-wrapper bg-surface">
@@ -126,6 +127,7 @@ const handleSubmit = async () => {
       >
         <VCard flat :max-width="500" class="mt-12 mt-sm-0 pa-4">
           <VCardText>
+            <!-- welcome section -->
             <h5 class="text-h5 mb-1">
               Welcome to
               <span class="text-capitalize"> Employee Management System </span>!
@@ -140,17 +142,19 @@ const handleSubmit = async () => {
           <VCardText>
             <VForm ref="refVForm" @submit.prevent="handleSubmit">
               <VRow>
+                <!-- email field -->
                 <VCol cols="12">
                   <AppTextField
                     v-model="email"
-                    label="Email"
-                    type="email"
                     :rules="validationRules.email"
+                    label="Email"
+                    type="email"     
                     autofocus
                     required
                   />
                 </VCol>
 
+                <!-- password field -->
                 <VCol cols="12">
                   <AppTextField
                     v-model="password"
