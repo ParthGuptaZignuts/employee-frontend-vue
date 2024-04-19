@@ -306,7 +306,6 @@ onMounted(fetchCompanyNames);
                   :items="companyOptions"
                   item-title="name"
                   item-value="id"
-                  :rules="[requiredValidator]"
                   :disabled="props.employeeData !== null"
                 />
               </VCol>

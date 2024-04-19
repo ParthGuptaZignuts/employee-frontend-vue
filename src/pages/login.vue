@@ -9,7 +9,7 @@ import authV2MaskDark from "@images/pages/misc-mask-dark.png";
 import authV2MaskLight from "@images/pages/misc-mask-light.png";
 import { useRouter } from "vue-router";
 import { VForm } from "vuetify/components/VForm";
-import axios from "../axiosFile"; // Assuming axiosFile contains axios instance
+import axios from "../axiosFile";
 import { validationRules } from "../composables/useValidation.js";
 import { toast } from "vue3-toastify";
 import "vue3-toastify/dist/index.css";
