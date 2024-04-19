@@ -195,28 +195,28 @@ const debouncedSearch = debounce(() => {
 }, 500);
 
 // Watcher for search input
-watch(search, () => {
-  debouncedSearch();
-});
+watch(
+  [search, selectedFilter],
+  async ([searchValue, filterValue], [prevSearchValue, prevFilterValue]) => {
+    // Check if search value or filter value has changed
+    if (searchValue !== prevSearchValue || filterValue !== prevFilterValue) {
+      try {      
+        let status = null;
+        if (filterValue === "Active Companies") {
+          status = "A";
+        } else if (filterValue === "In-Active Companies") {
+          status = "I";
+        }
 
-watch([search, selectedFilter], async ([searchValue, filterValue], [prevSearchValue, prevFilterValue]) => {
-  // Check if search value or filter value has changed
-  if (searchValue !== prevSearchValue || filterValue !== prevFilterValue) {
-    try {      
-      let status = null;
-      if (filterValue === "Active Companies") {
-        status = "A";
-      } else if (filterValue === "In-Active Companies") {
-        status = "I";
+        const response = await axios.get(`/companies?search=${searchValue}&status=${status}`);
+        userList.value = response.data.data;
+      } catch (error) {
+        console.error("Failed to fetch company data:", error.message);
       }
-
-      const response = await axios.get(`/companies?search=${searchValue}&status=${status}`);
-      userList.value = response.data.data;
-    } catch (error) {
-      console.error("Failed to fetch company data:", error.message);
     }
-  }
-});
+  },
+  { deep: true } // Add the deep option to watch changes in nested values of reactive objects
+);
 
 
 // Fetch data on component mount

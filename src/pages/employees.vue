@@ -238,10 +238,6 @@ const fetchCompanyNames = async () => {
 };
 
 // Watcher for search input
-watch(search, () => {
-  debouncedSearch();
-});
-
 watch(
   [search, selectedFilter],
   async ([searchValue, filterValue], [prevSearchValue, prevFilterValue]) => {
@@ -277,7 +273,8 @@ watch(
         console.error("Failed to fetch employee data:", error.message);
       }
     }
-  }
+  },
+  { deep: true } // Add the deep option to watch changes in nested values of reactive objects
 );
 
 // Fetch data with company names on component mount

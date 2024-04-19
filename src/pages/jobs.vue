@@ -159,7 +159,7 @@ const handleNewUserData = async (employeeData) => {
     if (isEditMode.value) {
       let response = await axios.post(
         `/job/update/${editCompanyData.value.id}`,
-        employeeData,
+        employeeData
       );
       if (response) {
         toast("Job Updated successfully", {
@@ -220,10 +220,6 @@ const debouncedSearch = debounce(() => {
 }, 500);
 
 // Watcher for search input
-watch(search, () => {
-  debouncedSearch();
-});
-
 watch(
   [search, selectedFilter],
   async ([searchValue, filterValue], [prevSearchValue, prevFilterValue]) => {
@@ -254,7 +250,8 @@ watch(
         console.error("Failed to fetch job data:", error.message);
       }
     }
-  }
+  },
+  { deep: true } // Set deep option to true to watch nested properties
 );
 
 // Fetch data on component mount
