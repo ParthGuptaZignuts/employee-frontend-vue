@@ -38,7 +38,7 @@ const userType = localStorage.getItem("type");
 
 // items to be shown on page
 const userListMeta = computed(() => {
-  // if user type is Super Admin show this items 
+  // if user type is Super Admin show this items
   if (userType === "SA")
     return [
       {
@@ -66,8 +66,15 @@ const userListMeta = computed(() => {
         stats: userData.value ? userData.value.total_jobs : "N/A",
         subtitle: "Number of job opening currently active",
       },
+      {
+        icon: "tabler-file-certificate",
+        color: "Primary",
+        title: "Numbers of Job Applications Awaits",
+        stats: userData.value ? userData.value.total_Application : "N/A",
+        subtitle: "Number of job applications awaits for approval",
+      },
     ];
-    // if user type is Company Admin show this items
+  // if user type is Company Admin show this items
   if (userType === "CA") {
     return [
       {
@@ -83,18 +90,25 @@ const userListMeta = computed(() => {
         stats: userData.value ? userData.value.total_jobs : "N/A",
         subtitle: "Number of job opening currently active",
       },
+      {
+        icon: "tabler-file-certificate",
+        color: "Primary",
+        title: "Numbers of Job Applications Awaits For Approval",
+        stats: userData.value ? userData.value.total_Application : "N/A",
+        subtitle: "Number of job applications awaits for approval",
+      },
     ];
   }
 });
 
-//  Fetch data on component mount 
+//  Fetch data on component mount
 onMounted(() => {
   fetchData();
 });
 </script>
 
 <!-- template section -->
-<template>  
+<template>
   <div>
     <div>
       <VRow>

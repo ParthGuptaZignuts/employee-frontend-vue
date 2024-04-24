@@ -16,6 +16,11 @@ export default function generateMenuItems() {
       title: 'Jobs',
       to: { name: 'jobs' },
       icon: { icon: 'tabler-tie' },
+    },
+    {
+      title: 'Job Applications',
+      to:{name:'JobApplication'},
+      icon :{icon:'tabler-file-certificate'},
     }
   ];
 
