@@ -256,31 +256,6 @@ onMounted(() => {
       <VProgressCircular :size="40" color="primary" indeterminate />
     </div>
     <div v-else>
-      <!-- search bar -->
-      <div class="search-container d-flex align-center">
-        <div class="search-input" style="width: 70%">
-          <VTextField
-            v-model="search"
-            label="Search"
-            outlined
-            dense
-            clearable
-            placeholder="Search Jobs by Title"
-          />
-        </div>
-        <!-- filter search -->
-        <div class="filter-select" style="width: 30%">
-          <AppSelect
-            v-model="selectedFilter"
-            :items="items"
-            clearable
-            clear-icon="tabler-x"
-            single-line
-            placeholder="Show By Type"
-          />
-        </div>
-      </div>
-
       <!-- data table -->
       <VDataTable :headers="headers" :items="userList" :items-per-page="10">
         <template #item.application_id="{ item }">
