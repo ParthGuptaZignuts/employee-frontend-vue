@@ -15,7 +15,7 @@ const props = defineProps({
     default: null,
   },
 });
-const emit = defineEmits(["update:isEmployeeDrawerOpen", "employeeData"]);
+const emit = defineEmits(["update:isEmployeeDrawerOpen", "formData"]);
 
 // Define reactive variables
 const isFormValid = ref(false);
@@ -79,13 +79,9 @@ const onSubmit = async () => {
       // All validations passed, proceed with form submission
       const formData = {
         application_id: ApplicationNo.value,
-        candidate_name: NameOfCandidate.value,
-        company_name: NameOfCompany.value,
-        job_title: PostAppliedFor.value,
         status: Status.value, // Use the internal status value
       };
-      console.log(formData);
-      emit("Job Application Data", formData);
+      emit("formData", formData);
       closeNavigationDrawer();
       nextTick(() => {
         clearForm();

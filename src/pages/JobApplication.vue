@@ -76,7 +76,6 @@ const resolveStatus = (status) => {
 
 // Function to open add new job drawer
 const openAddNewJobApplicationDrawer = async (CandidateData) => {
-  console.log(CandidateData);
   if (CandidateData) {
     try {
       const response = await axios.get(`/allCandidateInfo/${CandidateData.application_id}`);
@@ -156,16 +155,16 @@ const deleteItemConfirm = async () => {
   }
 };
 // Function to handle new job data
-const handleNewUserData = async (employeeData) => {
+const handleNewUserData = async (formData) => {
   try {
     loading.value = true;
     if (isEditMode.value) {
       let response = await axios.post(
-        `/job/update/${editJobApplicationData.value.id}`,
-        employeeData
+        `/allCandidateInfo/update/${formData.application_id}`,
+        formData
       );
       if (response) {
-        toast("Job Updated successfully", {
+        toast("Job Status Updated successfully", {
           theme: "auto",
           type: "success",
           pauseOnHover: false,
@@ -173,18 +172,7 @@ const handleNewUserData = async (employeeData) => {
           dangerouslyHTMLString: true,
         });
       }
-    } else {
-      let response = await axios.post("job/create", employeeData);
-      if (response) {
-        toast("Job Created Successfully", {
-          theme: "auto",
-          type: "success",
-          pauseOnHover: false,
-          pauseOnFocusLoss: false,
-          dangerouslyHTMLString: true,
-        });
-      }
-    }
+    } 
 
     fetchData();
 
@@ -202,7 +190,6 @@ const fetchData = async () => {
   try {
     const response = await axios.get("/allCandidateInfo");
     userList.value = response.data;
-    console.log(userList.value);
   } catch (error) {
     console.error("Failed to Candidate data:", error.message);
   }
@@ -400,7 +387,7 @@ onMounted(() => {
     <AddNewJobApplicationDrawer
       v-model:isEmployeeDrawerOpen="isAddNewJobApplicationDrawer"
       :employee-data="editJobApplicationData"
-      @employee-data="handleNewUserData"
+      @formData="handleNewUserData"
     />
   </div>
 </template>
