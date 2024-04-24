@@ -21,11 +21,7 @@ const permentDelete = ref(false);
 const tempDelete = ref(false);
 const loading = ref(false);
 const search = ref("");
-const items = [
-  "Approved",
-  "Pending",
-  "Rejected",
-];
+const items = ["Approved", "Pending", "Rejected"];
 const selectedFilter = ref(null);
 
 // headers
@@ -60,17 +56,17 @@ const headers = [
   },
 ];
 
-// status 
+// status
 const resolveStatus = (status) => {
   switch (status) {
-    case 'P':
-      return { text: 'Pending', color: 'secondary' }; 
-    case 'R':
-      return { text: 'Rejected', color: 'error' }; 
-    case 'A':
-      return { text: 'Approved', color: 'success' }; 
+    case "P":
+      return { text: "Pending", color: "secondary" };
+    case "R":
+      return { text: "Rejected", color: "error" };
+    case "A":
+      return { text: "Approved", color: "success" };
     default:
-      return { text: 'Unknown', color: 'grey' }; 
+      return { text: "Unknown", color: "grey" };
   }
 };
 
@@ -78,7 +74,9 @@ const resolveStatus = (status) => {
 const openAddNewJobApplicationDrawer = async (CandidateData) => {
   if (CandidateData) {
     try {
-      const response = await axios.get(`/allCandidateInfo/${CandidateData.application_id}`);
+      const response = await axios.get(
+        `/allCandidateInfo/${CandidateData.application_id}`
+      );
       editJobApplicationData.value = response.data;
       if (editJobApplicationData.value) {
         isEditMode.value = true;
@@ -120,13 +118,12 @@ const deleteItemConfirm = async () => {
           Authorization: `Bearer ${token}`,
         },
       };
-
-      const params = {
-        permanent_delete: permentDelete.value,
-      };
+        const params = {
+          hard: permentDelete.value,
+        };
 
       // Update the delete request to include the token in the headers
-      await axios.post(`/job/delete/${deleteItemId.value}`, null, {
+      await axios.post(`/allCandidateInfo/delete/${deleteItemId.value}`, null, {
         ...config,
         params,
       });
@@ -143,6 +140,7 @@ const deleteItemConfirm = async () => {
         pauseOnFocusLoss: false,
         dangerouslyHTMLString: true,
       });
+      fetchData();
     } catch (error) {
       toast("Failed to delete Job", {
         theme: "auto",
@@ -172,7 +170,7 @@ const handleNewUserData = async (formData) => {
           dangerouslyHTMLString: true,
         });
       }
-    } 
+    }
 
     fetchData();
 
@@ -288,7 +286,7 @@ onMounted(() => {
         <template #item.application_id="{ item }">
           <span>{{ item.raw.application_id }}</span>
         </template>
-      
+
         <template #item.candidate_name="{ item }">
           <div class="d-flex align-center">
             <VAvatar
@@ -299,7 +297,7 @@ onMounted(() => {
             >
               <span>{{ avatarText(item.raw.candidate_name) }}</span>
             </VAvatar>
-      
+
             <div class="d-flex flex-column ms-3">
               <span
                 class="d-block font-weight-medium text--primary text-truncate"
@@ -308,19 +306,24 @@ onMounted(() => {
             </div>
           </div>
         </template>
-      
+
         <template #item.company_name="{ item }">
           <span>{{ item.raw.company_name }}</span>
         </template>
-      
+
         <template #item.job_title="{ item }">
           <span>{{ item.raw.job_title }}</span>
         </template>
-      
+
         <template #item.resume_path="{ item }">
-          <a :href="`http://127.0.0.1:8000/storage/${item.raw.resume_path}`" target="_blank" rel="noopener noreferrer">Download</a>
+          <a
+            :href="`http://127.0.0.1:8000/storage/${item.raw.resume_path}`"
+            target="_blank"
+            rel="noopener noreferrer"
+            >Download</a
+          >
         </template>
-      
+
         <template #item.status="{ item }">
           <VChip
             :color="resolveStatus(item.raw.status).color"
@@ -331,7 +334,7 @@ onMounted(() => {
             <span>{{ resolveStatus(item.raw.status).text }}</span>
           </VChip>
         </template>
-      
+
         <template #item.actions="{ item }">
           <div class="d-flex gap-1">
             <IconBtn @click="openAddNewJobApplicationDrawer(item.raw)">
