@@ -12,8 +12,8 @@ import { debounce } from "lodash";
 
 // Reactive variables and references
 const deleteDialog = ref(false);
-const isAddNewCompanyDrawerVisible = ref(false);
-const editCompanyData = ref(null);
+const isAddNewJobApplicationDrawer = ref(false);
+const editJobApplicationData = ref(null);
 const isEditMode = ref(false);
 const deleteItemId = ref(null);
 const userList = ref([]);
@@ -35,7 +35,7 @@ const headers = [
     key: "application_id",
   },
   {
-    title: "Name of Candidate",
+    title: "Name Of The Candidate",
     key: "candidate_name",
   },
   {
@@ -75,23 +75,23 @@ const resolveStatus = (status) => {
 };
 
 // Function to open add new job drawer
-const openAddNewCompanyDrawer = async (employeeData) => {
-  console.log(employeeData);
-  if (employeeData) {
+const openAddNewJobApplicationDrawer = async (CandidateData) => {
+  console.log(CandidateData);
+  if (CandidateData) {
     try {
-      const response = await axios.get(`/job/${employeeData.id}`);
-      editCompanyData.value = response.data;
-      if (editCompanyData.value) {
+      const response = await axios.get(`/allCandidateInfo/${CandidateData.application_id}`);
+      editJobApplicationData.value = response.data;
+      if (editJobApplicationData.value) {
         isEditMode.value = true;
-        isAddNewCompanyDrawerVisible.value = true;
+        isAddNewJobApplicationDrawer.value = true;
       }
     } catch (error) {
       console.error("Failed to fetch employee details:", error.message);
     }
   } else {
-    editCompanyData.value = null;
+    editJobApplicationData.value = null;
     isEditMode.value = false;
-    isAddNewCompanyDrawerVisible.value = true;
+    isAddNewJobApplicationDrawer.value = true;
   }
 };
 
@@ -161,7 +161,7 @@ const handleNewUserData = async (employeeData) => {
     loading.value = true;
     if (isEditMode.value) {
       let response = await axios.post(
-        `/job/update/${editCompanyData.value.id}`,
+        `/job/update/${editJobApplicationData.value.id}`,
         employeeData
       );
       if (response) {
@@ -188,7 +188,7 @@ const handleNewUserData = async (employeeData) => {
 
     fetchData();
 
-    isAddNewCompanyDrawerVisible.value = false;
+    isAddNewJobApplicationDrawer.value = false;
     loading.value = false;
   } catch (error) {
     console.error("Failed to update or create Employee:", error.message);
@@ -271,12 +271,6 @@ onMounted(() => {
       <VProgressCircular :size="40" color="primary" indeterminate />
     </div>
     <div v-else>
-      <div class="d-flex justify-end ma-3">
-        <VBtn prepend-icon="tabler-plus" @click="openAddNewCompanyDrawer(null)">
-          Create New Job
-        </VBtn>
-      </div>
-
       <!-- search bar -->
       <div class="search-container d-flex align-center">
         <div class="search-input" style="width: 70%">
@@ -353,7 +347,7 @@ onMounted(() => {
       
         <template #item.actions="{ item }">
           <div class="d-flex gap-1">
-            <IconBtn @click="openAddNewCompanyDrawer(item.raw)">
+            <IconBtn @click="openAddNewJobApplicationDrawer(item.raw)">
               <VIcon icon="mdi-pencil-outline" />
             </IconBtn>
             <IconBtn @click="deleteItem(item.raw.application_id)">
@@ -404,8 +398,8 @@ onMounted(() => {
     </VDialog>
     <!-- job drawer -->
     <AddNewJobApplicationDrawer
-      v-model:isEmployeeDrawerOpen="isAddNewCompanyDrawerVisible"
-      :employee-data="editCompanyData"
+      v-model:isEmployeeDrawerOpen="isAddNewJobApplicationDrawer"
+      :employee-data="editJobApplicationData"
       @employee-data="handleNewUserData"
     />
   </div>
