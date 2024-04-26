@@ -227,7 +227,7 @@ const fetchCompanyNames = async () => {
   try {
     const response = await axios.get("getallcompanies");
     items.value = response.data.map((company) => company.name);
-    companyOptions.value = response.data.map((company) => ({
+    companyOptions.value = response.data.data.map((company) => ({
       id: company.id,
       name: company.name,
     }));

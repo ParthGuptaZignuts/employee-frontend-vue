@@ -77,7 +77,7 @@ const openAddNewCompanyDrawer = async (employeeData) => {
   if (employeeData) {
     try {
       const response = await axios.get(`/job/${employeeData.id}`);
-      editCompanyData.value = response.data;
+      editCompanyData.value = response.data.data;
       if (editCompanyData.value) {
         isEditMode.value = true;
         isAddNewCompanyDrawerVisible.value = true;
@@ -198,7 +198,7 @@ const fetchData = async () => {
   loading.value = true;
   try {
     const response = await axios.get("/jobs");
-    userList.value = response.data;
+    userList.value = response.data.data;
   } catch (error) {
     console.error("Failed to fetch company data:", error.message);
   }
@@ -245,7 +245,7 @@ watch(
         }
 
         const response = await axios.get(apiUrl, { params, ...config });
-        userList.value = response.data;
+        userList.value = response.data.data;
       } catch (error) {
         console.error("Failed to fetch job data:", error.message);
       }

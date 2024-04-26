@@ -38,7 +38,7 @@ const fetchCompanyNames = async () => {
   try {
     const token = localStorage.getItem("token");
     const response = await axios.get("getallcompanies");
-    companyOptions.value = response.data;
+    companyOptions.value = response.data.data;
   } catch (error) {
     console.error("Error fetching company options:", error);
   }
