@@ -55,23 +55,6 @@ const clearForm = () => {
   refForm.value?.resetValidation();
 };
 
-// Watch for changes in employeeData prop
-watch(
-  () => props.employeeData,
-  (newValue) => {
-    if (newValue) {
-      ApplicationNo.value = newValue.application_id;
-      NameOfCandidate.value = newValue.candidate_name;
-      NameOfCompany.value = newValue.company_name;
-      PostAppliedFor.value = newValue.job_title;
-      Status.value = newValue.status; 
-    } else {
-      CompanyId.value = null;
-      clearForm();
-    }
-  }
-);
-
 const onSubmit = async () => {
   try {
     let validate = await refForm.value?.validate();
@@ -107,15 +90,32 @@ const closeNavigationDrawer = () => {
   clearForm();
 };
 
+// Watch for changes in employeeData prop
+watch(
+  () => props.employeeData,
+  (newValue) => {
+    if (newValue) {
+      ApplicationNo.value = newValue.application_id;
+      NameOfCandidate.value = newValue.candidate_name;
+      NameOfCompany.value = newValue.company_name;
+      PostAppliedFor.value = newValue.job_title;
+      Status.value = newValue.status; 
+    } else {
+      CompanyId.value = null;
+      clearForm();
+    }
+  }
+);
+
 </script>
 
 <template>
   <div>
     <VNavigationDrawer
       temporary
-      :width="400"
       location="end"
       class="scrollable-content"
+      :width="400"
       :model-value="props.isEmployeeDrawerOpen"
       @update:model-value="handleDrawerModelValueUpdate"
     >
@@ -203,7 +203,7 @@ const closeNavigationDrawer = () => {
 .skills-grid {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
-  gap: 10px;
+  gap: 0.625rem; 
 }
 
 .skills-checkbox {
@@ -212,10 +212,10 @@ const closeNavigationDrawer = () => {
 }
 
 .skills-checkbox input {
-  margin-right: 5px;
+  margin-right: 0.3125rem; 
 }
 
 .skills-margin {
-  margin-bottom: 10px;
+  margin-bottom: 0.625rem; 
 }
 </style>

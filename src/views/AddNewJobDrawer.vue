@@ -20,6 +20,26 @@ const props = defineProps({
 });
 const emit = defineEmits(["update:isEmployeeDrawerOpen", "employeeData"]);
 
+// constant 
+const skillsOptions = [
+  { label: "MERN", value: "MERN" },
+  { label: "MEAN", value: "MEAN" },
+  { label: "LARAVEL+VUE", value: "LARAVEL+VUE" },
+  { label: "FLUTTER", value: "FLUTTER" },
+  { label: "DEVOPS", value: "DEVOPS" },
+  { label: "UI / UX", value: "UI / UX" },
+  { label: "ANDROID", value: "ANDROID" },
+  { label: "SALESFORCE", value: "SALESFORCE" },
+  { label: "REACT.JS", value: "REACT.JS" },
+  { label: "NODE.JS", value: "NODE.JS" },
+  { label: "AWS", value: "AWS" },
+  { label: "DBA", value: "DBA" },
+  {
+    label: "No Specific Skills Required",
+    value: "No Specific Skills Required",
+  },
+];
+
 // Define reactive variables
 const companyOptions = ref([]);
 const isFormValid = ref(false);
@@ -59,6 +79,35 @@ const clearForm = () => {
 };
 
 // Watch for changes in employeeData prop
+// watch(
+//   () => props.employeeData,
+//   (newValue) => {
+//     if (newValue) {
+//       Title.value = newValue.title;
+//       Salary.value = newValue.salary;
+//       EmploymentStatus.value = newValue.employment_type;
+//       ExperienceRequired.value = newValue.experience_required;
+//       PostedOn.value = newValue.posted_date;
+//       ExpiresOn.value = newValue.expiry_date;
+//       CompanyId.value = newValue.company_id;
+//       skillsRequired.value = newValue.skills_required
+//         ? newValue.skills_required.split(",").map((skill) => skill.trim())
+//         : [];
+//     } else {
+//       CompanyId.value = null;
+//       clearForm();
+//     }
+//   }
+// );
+// watch(
+//   () => skillsRequired.value,
+//   (newValue) => {
+//     if (newValue.includes("No Specific Skills Required") && newValue.length > 1) {
+//       skillsRequired.value = newValue.filter(skill => skill !== "No Specific Skills Required");
+//     }
+//   }
+// );
+
 watch(
   () => props.employeeData,
   (newValue) => {
@@ -73,39 +122,18 @@ watch(
       skillsRequired.value = newValue.skills_required
         ? newValue.skills_required.split(",").map((skill) => skill.trim())
         : [];
+      
+      // Remove 'No Specific Skills Required' if other skills are selected
+      if (skillsRequired.value.includes("No Specific Skills Required") && skillsRequired.value.length > 1) {
+        skillsRequired.value = skillsRequired.value.filter(skill => skill !== "No Specific Skills Required");
+      }
     } else {
-      CompanyId.value = null;
       clearForm();
     }
   }
 );
-watch(
-  () => skillsRequired.value,
-  (newValue) => {
-    if (newValue.includes("No Specific Skills Required") && newValue.length > 1) {
-      skillsRequired.value = newValue.filter(skill => skill !== "No Specific Skills Required");
-    }
-  }
-);
-const skillsOptions = [
-  { label: "MERN", value: "MERN" },
-  { label: "MEAN", value: "MEAN" },
-  { label: "LARAVEL+VUE", value: "LARAVEL+VUE" },
-  { label: "FLUTTER", value: "FLUTTER" },
-  { label: "DEVOPS", value: "DEVOPS" },
-  { label: "UI / UX", value: "UI / UX" },
-  { label: "ANDROID", value: "ANDROID" },
-  { label: "SALESFORCE", value: "SALESFORCE" },
-  { label: "REACT.JS", value: "REACT.JS" },
-  { label: "NODE.JS", value: "NODE.JS" },
-  { label: "AWS", value: "AWS" },
-  { label: "DBA", value: "DBA" },
-  {
-    label: "No Specific Skills Required",
-    value: "No Specific Skills Required",
-  },
-];
 
+// on submit function
 const onSubmit = async () => {
   try {
     let validate = await refForm.value?.validate();
@@ -176,7 +204,6 @@ const onSubmit = async () => {
   }
 };
 
-
 // Function to close the navigation drawer
 const closeNavigationDrawer = () => {
   emit("update:isEmployeeDrawerOpen", false);
@@ -191,9 +218,9 @@ onMounted(fetchCompanyNames);
   <div>
   <VNavigationDrawer
     temporary
-    :width="400"
     location="end"
     class="scrollable-content"
+    :width="400"
     :model-value="props.isEmployeeDrawerOpen"
     @update:model-value="handleDrawerModelValueUpdate"
   >
@@ -303,9 +330,9 @@ onMounted(fetchCompanyNames);
                 <AppAutocomplete
                   v-model="CompanyId"
                   label="Company"
-                  :items="companyOptions"
                   item-title="name"
                   item-value="id"
+                  :items="companyOptions"
                   :disabled="props.employeeData !== null"
                 />
               </VCol>
@@ -334,7 +361,7 @@ onMounted(fetchCompanyNames);
 .skills-grid {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
-  gap: 10px;
+  gap: 0.625rem; 
 }
 
 .skills-checkbox {
@@ -343,10 +370,10 @@ onMounted(fetchCompanyNames);
 }
 
 .skills-checkbox input {
-  margin-right: 5px;
+  margin-right: 0.3125rem; 
 }
 
 .skills-margin {
-  margin-bottom: 10px;
+  margin-bottom: 0.625rem; 
 }
 </style>

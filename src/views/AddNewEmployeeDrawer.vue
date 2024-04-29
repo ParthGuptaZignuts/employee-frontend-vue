@@ -64,26 +64,6 @@ const closeNavigationDrawer = () => {
   clearForm();
 };
 
-// watcher to get employee data
-watch(
-  () => props.employeeData,
-  (newValue) => {
-    if (newValue) {
-      FirstName.value = newValue.first_name;
-      LastName.value = newValue.last_name;
-      Email.value = newValue.email;
-      Address.value = newValue.address;
-      City.value = newValue.city;
-      DOB.value = newValue.dob;
-      JoiningDate.value = newValue.joining_date;
-      CompanyId.value = newValue.company_id;
-    } else {
-      CompanyId.value = null;
-      clearForm();
-    }
-  }
-);
-
 // submit the form 
 const onSubmit = async () => {
   try {
@@ -127,6 +107,26 @@ const onSubmit = async () => {
     console.error("Error:", error.message);
   }
 };
+
+// watcher to get employee data
+watch(
+  () => props.employeeData,
+  (newValue) => {
+    if (newValue) {
+      FirstName.value = newValue.first_name;
+      LastName.value = newValue.last_name;
+      Email.value = newValue.email;
+      Address.value = newValue.address;
+      City.value = newValue.city;
+      DOB.value = newValue.dob;
+      JoiningDate.value = newValue.joining_date;
+      CompanyId.value = newValue.company_id;
+    } else {
+      CompanyId.value = null;
+      clearForm();
+    }
+  }
+);
 
 // fetch company name details on mounted
 onMounted(fetchCompanyNames);
@@ -221,9 +221,9 @@ onMounted(fetchCompanyNames);
                 <AppAutocomplete
                   v-model="CompanyId"
                   label="Company"
-                  :items="companyOptions"
                   item-title="name"
                   item-value="id"
+                  :items="companyOptions"
                   :rules="[requiredValidator]"
                   :disabled="props.employeeData !== null"
                 />
