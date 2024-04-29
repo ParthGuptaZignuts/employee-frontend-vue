@@ -64,7 +64,7 @@ watch(
       NameOfCandidate.value = newValue.candidate_name;
       NameOfCompany.value = newValue.company_name;
       PostAppliedFor.value = newValue.job_title;
-      Status.value = newValue.status; // Assign the internal status value directly
+      Status.value = newValue.status; 
     } else {
       CompanyId.value = null;
       clearForm();

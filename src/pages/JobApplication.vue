@@ -77,7 +77,7 @@ const openAddNewJobApplicationDrawer = async (CandidateData) => {
       const response = await axios.get(
         `/allCandidateInfo/${CandidateData.application_id}`
       );
-      editJobApplicationData.value = response.data;
+      editJobApplicationData.value = response.data.data;
       if (editJobApplicationData.value) {
         isEditMode.value = true;
         isAddNewJobApplicationDrawer.value = true;
@@ -187,7 +187,7 @@ const fetchData = async () => {
   loading.value = true;
   try {
     const response = await axios.get("/allCandidateInfo");
-    userList.value = response.data;
+    userList.value = response.data.data;
   } catch (error) {
     console.error("Failed to Candidate data:", error.message);
   }
