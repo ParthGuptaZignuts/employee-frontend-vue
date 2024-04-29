@@ -227,7 +227,7 @@ watch(
   [search, selectedFilter],
   async ([searchValue, filterValue], [prevSearchValue, prevFilterValue]) => {
     // Check if search value or filter value has changed
-    if (search.value.length > 3 && searchValue !== prevSearchValue || filterValue !== prevFilterValue) {
+    if (searchValue.length === 0 || (searchValue.length > 3 && searchValue !== prevSearchValue ) || filterValue !== prevFilterValue) {
       try {
         const token = localStorage.getItem("token");
         const config = {

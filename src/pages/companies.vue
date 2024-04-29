@@ -198,7 +198,7 @@ watch(
   [search, selectedFilter],
   async ([searchValue, filterValue], [prevSearchValue, prevFilterValue]) => {
     // Check if search value or filter value has changed
-    if (searchValue.length > 3 && searchValue !== prevSearchValue || filterValue !== prevFilterValue) {
+    if (searchValue.length === 0 || (searchValue.length > 3 && searchValue !== prevSearchValue ) || filterValue !== prevFilterValue) {
       try {
         let status = null;
         if (filterValue === "Active Companies") {
