@@ -22,6 +22,7 @@ const authThemeImg = useGenerateImageVariant(
   authV2LoginIllustrationBorderedDark,
   true
 );
+
 const authThemeMask = useGenerateImageVariant(authV2MaskLight, authV2MaskDark);
 
 // Reactive variables and references
@@ -75,6 +76,7 @@ const handleSubmit = async () => {
           pauseOnFocusLoss: false,
           dangerouslyHTMLString: true,
         });
+        // after 2seconds pushing it to dashboard
         setTimeout(function () {
           router.push("/");
         }, 2000);

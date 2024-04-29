@@ -28,7 +28,7 @@ const fetchData = async () => {
     isLoading.value = true;
 
     const response = await axios.get("/statistics", config);
-    userData.value = response.data;
+    userData.value = response.data.data;
   } catch (err) {
     error.value = err.message;
   } finally {
@@ -146,6 +146,7 @@ onMounted(() => {
 
 <!-- Scoped styles -->
 <style scoped>
+
 .fixed-height-card {
   height: 7.5rem;
 }
