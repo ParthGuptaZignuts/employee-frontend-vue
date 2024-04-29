@@ -10,27 +10,6 @@ import { toast } from "vue3-toastify";
 import "vue3-toastify/dist/index.css";
 import { debounce } from "lodash";
 
-// Reactive variables and references
-const deleteDialog = ref(false);
-const isAddNewCompanyDrawerVisible = ref(false);
-const editCompanyData = ref(null);
-const isEditMode = ref(false);
-const deleteItemId = ref(null);
-const userList = ref([]);
-const permentDelete = ref(false);
-const tempDelete = ref(false);
-const loading = ref(false);
-const search = ref("");
-const items = [
-  "Full Time",
-  "Part Time",
-  "Hybrid",
-  "Work From Home",
-  "Work From Office",
-  "Internship",
-];
-const selectedFilter = ref(null);
-
 // headers
 const headers = [
   {
@@ -71,6 +50,30 @@ const headers = [
   },
 ];
 
+// Reactive variables and references
+const deleteDialog = ref(false);
+const isAddNewCompanyDrawerVisible = ref(false);
+const editCompanyData = ref(null);
+const isEditMode = ref(false);
+const deleteItemId = ref(null);
+const userList = ref([]);
+const permentDelete = ref(false);
+const tempDelete = ref(false);
+const loading = ref(false);
+const search = ref("");
+const items = [
+  "Full Time",
+  "Part Time",
+  "Hybrid",
+  "Work From Home",
+  "Work From Office",
+  "Internship",
+];
+const selectedFilter = ref(null);
+
+// Computed property to check if submit button is enabled
+const isSubmitEnabled = computed(() => permentDelete.value || tempDelete.value);
+
 // Function to open add new job drawer
 const openAddNewCompanyDrawer = async (employeeData) => {
   console.log(employeeData);
@@ -104,9 +107,6 @@ const closeDelete = () => {
   permentDelete.value = false;
   tempDelete.value = false;
 };
-
-// Computed property to check if submit button is enabled
-const isSubmitEnabled = computed(() => permentDelete.value || tempDelete.value);
 
 // Function to confirm deletion of item
 const deleteItemConfirm = async () => {
@@ -152,6 +152,7 @@ const deleteItemConfirm = async () => {
     }
   }
 };
+
 // Function to handle new job data
 const handleNewUserData = async (employeeData) => {
   try {
@@ -216,7 +217,9 @@ const handleDeleteOptionChange = (option) => {
 
 // Debounced search function
 const debouncedSearch = debounce(() => {
+  if(search.value.length > 3) {
   console.log("Searching for:", search.value);
+  }
 }, 500);
 
 // Watcher for search input
@@ -224,7 +227,7 @@ watch(
   [search, selectedFilter],
   async ([searchValue, filterValue], [prevSearchValue, prevFilterValue]) => {
     // Check if search value or filter value has changed
-    if (searchValue !== prevSearchValue || filterValue !== prevFilterValue) {
+    if (search.value.length > 3 && searchValue !== prevSearchValue || filterValue !== prevFilterValue) {
       try {
         const token = localStorage.getItem("token");
         const config = {
@@ -258,6 +261,7 @@ watch(
 onMounted(() => {
   fetchData();
 });
+
 </script>
 
 <!-- Template section -->
@@ -411,12 +415,12 @@ onMounted(() => {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  margin-bottom: 20px;
+  margin-bottom: 1.25rem;
 }
 
 .search-input {
   width: 70%;
-  margin-right: 10px;
+  margin-right: 0.625rem;
 }
 
 .filter-select {

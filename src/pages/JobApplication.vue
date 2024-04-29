@@ -10,20 +10,6 @@ import { toast } from "vue3-toastify";
 import "vue3-toastify/dist/index.css";
 import { debounce } from "lodash";
 
-// Reactive variables and references
-const deleteDialog = ref(false);
-const isAddNewJobApplicationDrawer = ref(false);
-const editJobApplicationData = ref(null);
-const isEditMode = ref(false);
-const deleteItemId = ref(null);
-const userList = ref([]);
-const permentDelete = ref(false);
-const tempDelete = ref(false);
-const loading = ref(false);
-const search = ref("");
-const items = ["Approved", "Pending", "Rejected"];
-const selectedFilter = ref(null);
-
 // headers
 const headers = [
   {
@@ -55,6 +41,22 @@ const headers = [
     key: "actions",
   },
 ];
+
+// Reactive variables and references
+const deleteDialog = ref(false);
+const isAddNewJobApplicationDrawer = ref(false);
+const editJobApplicationData = ref(null);
+const isEditMode = ref(false);
+const deleteItemId = ref(null);
+const userList = ref([]);
+const permentDelete = ref(false);
+const tempDelete = ref(false);
+const loading = ref(false);
+const search = ref("");
+const selectedFilter = ref(null);
+
+// Computed property to check if submit button is enabled
+const isSubmitEnabled = computed(() => permentDelete.value || tempDelete.value);
 
 // status
 const resolveStatus = (status) => {
@@ -105,9 +107,6 @@ const closeDelete = () => {
   tempDelete.value = false;
 };
 
-// Computed property to check if submit button is enabled
-const isSubmitEnabled = computed(() => permentDelete.value || tempDelete.value);
-
 // Function to confirm deletion of item
 const deleteItemConfirm = async () => {
   if (isSubmitEnabled.value) {
@@ -152,6 +151,7 @@ const deleteItemConfirm = async () => {
     }
   }
 };
+
 // Function to handle new job data
 const handleNewUserData = async (formData) => {
   try {
@@ -205,7 +205,9 @@ const handleDeleteOptionChange = (option) => {
 
 // Debounced search function
 const debouncedSearch = debounce(() => {
+  if(search.value.length > 3) {
   console.log("Searching for:", search.value);
+  }
 }, 500);
 
 // Watcher for search input
@@ -213,7 +215,7 @@ watch(
   [search, selectedFilter],
   async ([searchValue, filterValue], [prevSearchValue, prevFilterValue]) => {
     // Check if search value or filter value has changed
-    if (searchValue !== prevSearchValue || filterValue !== prevFilterValue) {
+    if (searchValue.length > 3 && searchValue !== prevSearchValue || filterValue !== prevFilterValue) {
       try {
         const token = localStorage.getItem("token");
         const config = {
@@ -376,12 +378,12 @@ onMounted(() => {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  margin-bottom: 20px;
+  margin-bottom: 1.25rem;
 }
 
 .search-input {
   width: 70%;
-  margin-right: 10px;
+  margin-right: 0.625rem;
 }
 
 .filter-select {

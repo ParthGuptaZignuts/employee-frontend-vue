@@ -3,12 +3,15 @@
 import { computed, onMounted, ref } from "vue";
 import axios from "../axiosFile.js";
 
-// constants
+//constants
+const userType = localStorage.getItem("type");
+
+//ref
 const userData = ref(null);
 const isLoading = ref(false);
 const error = ref(null);
 
-// function to call api
+//Function to call api
 const fetchData = async () => {
   try {
     const token = localStorage.getItem("token");
@@ -33,10 +36,7 @@ const fetchData = async () => {
   }
 };
 
-// getting user type from local storage
-const userType = localStorage.getItem("type");
-
-// items to be shown on page
+//Items to be shown on page
 const userListMeta = computed(() => {
   // if user type is Super Admin show this items
   if (userType === "SA")
@@ -101,7 +101,7 @@ const userListMeta = computed(() => {
   }
 });
 
-//  Fetch data on component mount
+//Fetch data on component mount
 onMounted(() => {
   fetchData();
 });
@@ -147,6 +147,6 @@ onMounted(() => {
 <!-- Scoped styles -->
 <style scoped>
 .fixed-height-card {
-  height: 120px;
+  height: 7.5rem;
 }
 </style>
