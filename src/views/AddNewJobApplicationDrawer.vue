@@ -6,16 +6,16 @@ import "vue3-toastify/dist/index.css";
 
 // Define props and emits
 const props = defineProps({
-  isEmployeeDrawerOpen: {
+  isJobApplicationDrawerOpen: {
     type: Boolean,
     required: true,
   },
-  employeeData: {
+  jobApplicationData: {
     type: Object,
     default: null,
   },
 });
-const emit = defineEmits(["update:isEmployeeDrawerOpen", "formData"]);
+const emit = defineEmits(["update:isJobApplicationDrawerOpen", "formData"]);
 
 // Define reactive variables
 const isFormValid = ref(false);
@@ -46,7 +46,7 @@ const displayStatus = computed({
 
 // Function to handle model value update
 const handleDrawerModelValueUpdate = (val) => {
-  emit("update:isEmployeeDrawerOpen", val);
+  emit("update:isJobApplicationDrawerOpen", val);
 };
 
 // Function to clear the form
@@ -86,13 +86,13 @@ const onSubmit = async () => {
 
 // Function to close the navigation drawer
 const closeNavigationDrawer = () => {
-  emit("update:isEmployeeDrawerOpen", false);
+  emit("update:isJobApplicationDrawerOpen", false);
   clearForm();
 };
 
-// Watch for changes in employeeData prop
+// Watch for changes in jobApplicationData prop
 watch(
-  () => props.employeeData,
+  () => props.jobApplicationData,
   (newValue) => {
     if (newValue) {
       ApplicationNo.value = newValue.application_id;
@@ -116,7 +116,7 @@ watch(
       location="end"
       class="scrollable-content"
       :width="400"
-      :model-value="props.isEmployeeDrawerOpen"
+      :model-value="props.isJobApplicationDrawerOpen"
       @update:model-value="handleDrawerModelValueUpdate"
     >
       <!-- Title -->

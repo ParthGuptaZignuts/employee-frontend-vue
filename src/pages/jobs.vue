@@ -52,8 +52,8 @@ const headers = [
 
 // Reactive variables and references
 const deleteDialog = ref(false);
-const isAddNewCompanyDrawerVisible = ref(false);
-const editCompanyData = ref(null);
+const isAddNewJobDrawerVisible = ref(false);
+const editJobData = ref(null);
 const isEditMode = ref(false);
 const deleteItemId = ref(null);
 const userList = ref([]);
@@ -75,23 +75,23 @@ const selectedFilter = ref(null);
 const isSubmitEnabled = computed(() => permentDelete.value || tempDelete.value);
 
 // Function to open add new job drawer
-const openAddNewCompanyDrawer = async (employeeData) => {
-  console.log(employeeData);
-  if (employeeData) {
+const openAddNewCompanyDrawer = async (jobData) => {
+  console.log(jobData);
+  if (jobData) {
     try {
-      const response = await axios.get(`/job/${employeeData.id}`);
-      editCompanyData.value = response.data.data;
-      if (editCompanyData.value) {
+      const response = await axios.get(`/job/${jobData.id}`);
+      editJobData.value = response.data.data;
+      if (editJobData.value) {
         isEditMode.value = true;
-        isAddNewCompanyDrawerVisible.value = true;
+        isAddNewJobDrawerVisible.value = true;
       }
     } catch (error) {
       console.error("Failed to fetch employee details:", error.message);
     }
   } else {
-    editCompanyData.value = null;
+    editJobData.value = null;
     isEditMode.value = false;
-    isAddNewCompanyDrawerVisible.value = true;
+    isAddNewJobDrawerVisible.value = true;
   }
 };
 
@@ -154,13 +154,13 @@ const deleteItemConfirm = async () => {
 };
 
 // Function to handle new job data
-const handleNewUserData = async (employeeData) => {
+const handleNewUserData = async (jobData) => {
   try {
     loading.value = true;
     if (isEditMode.value) {
       let response = await axios.post(
-        `/job/update/${editCompanyData.value.id}`,
-        employeeData
+        `/job/update/${editJobData.value.id}`,
+        jobData
       );
       if (response) {
         toast("Job Updated successfully", {
@@ -172,7 +172,7 @@ const handleNewUserData = async (employeeData) => {
         });
       }
     } else {
-      let response = await axios.post("job/create", employeeData);
+      let response = await axios.post("job/create", jobData);
       if (response) {
         toast("Job Created Successfully", {
           theme: "auto",
@@ -186,7 +186,7 @@ const handleNewUserData = async (employeeData) => {
 
     fetchData();
 
-    isAddNewCompanyDrawerVisible.value = false;
+    isAddNewJobDrawerVisible.value = false;
     loading.value = false;
   } catch (error) {
     console.error("Failed to update or create Employee:", error.message);
@@ -402,9 +402,9 @@ onMounted(() => {
     </VDialog>
     <!-- job drawer -->
     <AddNewJobDrawer
-      v-model:isEmployeeDrawerOpen="isAddNewCompanyDrawerVisible"
-      :employee-data="editCompanyData"
-      @employee-data="handleNewUserData"
+      v-model:isJobDrawerOpen="isAddNewJobDrawerVisible"
+      :job-data="editJobData"
+      @job-data="handleNewUserData"
     />
   </div>
 </template>

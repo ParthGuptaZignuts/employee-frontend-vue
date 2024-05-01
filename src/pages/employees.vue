@@ -52,8 +52,8 @@ localcheck !== "SA" ? (checkUser.value = false) : true;
 
 // Reactive variables and references
 const deleteDialog = ref(false);
-const isAddNewCompanyDrawerVisible = ref(false);
-const editCompanyData = ref(null);
+const isAddNewEmployeeDrawerVisible = ref(false);
+const editEmployeeData = ref(null);
 const isEditMode = ref(false);
 const deleteItemId = ref(null);
 const userList = ref([]);
@@ -94,18 +94,18 @@ const openAddNewCompanyDrawer = async (employeeData) => {
   if (employeeData) {
     try {
       const response = await axios.get(`/employee/${employeeData.id}`);
-      editCompanyData.value = response.data.data;
-      if (editCompanyData.value) {
+      editEmployeeData.value = response.data.data;
+      if (editEmployeeData.value) {
         isEditMode.value = true;
-        isAddNewCompanyDrawerVisible.value = true;
+        isAddNewEmployeeDrawerVisible.value = true;
       }
     } catch (error) {
       console.error("Failed to fetch employee details:", error.message);
     }
   } else {
-    editCompanyData.value = null;
+    editEmployeeData.value = null;
     isEditMode.value = false;
-    isAddNewCompanyDrawerVisible.value = true;
+    isAddNewEmployeeDrawerVisible.value = true;
   }
 };
 
@@ -161,7 +161,7 @@ const handleNewUserData = async (employeeData) => {
     loading.value = true;
     if (isEditMode.value) {
       let response = await axios.post(
-        `/employee/update/${editCompanyData.value.id}`,
+        `/employee/update/${editEmployeeData.value.id}`,
         employeeData
       );
       if (response) {
@@ -188,7 +188,7 @@ const handleNewUserData = async (employeeData) => {
 
     fetchData();
 
-    isAddNewCompanyDrawerVisible.value = false;
+    isAddNewEmployeeDrawerVisible.value = false;
     loading.value = false;
   } catch (error) {
     console.error("Failed to update or create Employee:", error.message);
@@ -430,8 +430,8 @@ onMounted(() => {
     </VDialog>
     <!-- employee side drawer -->
     <AddNewEmployeeDrawer
-      v-model:isEmployeeDrawerOpen="isAddNewCompanyDrawerVisible"
-      :employee-data="editCompanyData"
+      v-model:isEmployeeDrawerOpen="isAddNewEmployeeDrawerVisible"
+      :employee-data="editEmployeeData"
       @employee-data="handleNewUserData"
     />
   </div>

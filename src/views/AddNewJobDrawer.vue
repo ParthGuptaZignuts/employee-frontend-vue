@@ -9,16 +9,16 @@ import "vue3-toastify/dist/index.css";
 
 // Define props and emits
 const props = defineProps({
-  isEmployeeDrawerOpen: {
+  isJobDrawerOpen: {
     type: Boolean,
     required: true,
   },
-  employeeData: {
+  jobData: {
     type: Object,
     default: null,
   },
 });
-const emit = defineEmits(["update:isEmployeeDrawerOpen", "employeeData"]);
+const emit = defineEmits(["update:isJobDrawerOpen", "jobData"]);
 
 // constant 
 const skillsOptions = [
@@ -66,7 +66,7 @@ const fetchCompanyNames = async () => {
 
 // Function to handle model value update
 const handleDrawerModelValueUpdate = (val) => {
-  emit("update:isEmployeeDrawerOpen", val);
+  emit("update:isJobDrawerOpen", val);
 };
 
 // Function to clear the form
@@ -78,38 +78,9 @@ const clearForm = () => {
   refForm.value?.resetValidation();
 };
 
-// Watch for changes in employeeData prop
-// watch(
-//   () => props.employeeData,
-//   (newValue) => {
-//     if (newValue) {
-//       Title.value = newValue.title;
-//       Salary.value = newValue.salary;
-//       EmploymentStatus.value = newValue.employment_type;
-//       ExperienceRequired.value = newValue.experience_required;
-//       PostedOn.value = newValue.posted_date;
-//       ExpiresOn.value = newValue.expiry_date;
-//       CompanyId.value = newValue.company_id;
-//       skillsRequired.value = newValue.skills_required
-//         ? newValue.skills_required.split(",").map((skill) => skill.trim())
-//         : [];
-//     } else {
-//       CompanyId.value = null;
-//       clearForm();
-//     }
-//   }
-// );
-// watch(
-//   () => skillsRequired.value,
-//   (newValue) => {
-//     if (newValue.includes("No Specific Skills Required") && newValue.length > 1) {
-//       skillsRequired.value = newValue.filter(skill => skill !== "No Specific Skills Required");
-//     }
-//   }
-// );
 
 watch(
-  () => props.employeeData,
+  () => props.jobData,
   (newValue) => {
     if (newValue) {
       Title.value = newValue.title;
@@ -184,7 +155,7 @@ const onSubmit = async () => {
         skills_required: skillsRequired.value.join(", "),
       };
       console.log(formData);
-      emit("employeeData", formData);
+      emit("jobData", formData);
       closeNavigationDrawer();
       nextTick(() => {
         clearForm();
@@ -206,7 +177,7 @@ const onSubmit = async () => {
 
 // Function to close the navigation drawer
 const closeNavigationDrawer = () => {
-  emit("update:isEmployeeDrawerOpen", false);
+  emit("update:isJobDrawerOpen", false);
   clearForm();
 };
 
@@ -221,12 +192,12 @@ onMounted(fetchCompanyNames);
     location="end"
     class="scrollable-content"
     :width="400"
-    :model-value="props.isEmployeeDrawerOpen"
+    :model-value="props.isJobDrawerOpen"
     @update:model-value="handleDrawerModelValueUpdate"
   >
     <!-- Title -->
     <AppDrawerHeaderSection
-      :title="props.employeeData ? 'Edit Job' : 'Add Job'"
+      :title="props.jobData ? 'Edit Job' : 'Add Job'"
       @cancel="closeNavigationDrawer"
     />
 
@@ -333,7 +304,7 @@ onMounted(fetchCompanyNames);
                   item-title="name"
                   item-value="id"
                   :items="companyOptions"
-                  :disabled="props.employeeData !== null"
+                  :disabled="props.jobData !== null"
                 />
               </VCol>
 

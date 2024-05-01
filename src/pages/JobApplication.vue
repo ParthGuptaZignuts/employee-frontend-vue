@@ -365,8 +365,8 @@ onMounted(() => {
     </VDialog>
     <!-- job drawer -->
     <AddNewJobApplicationDrawer
-      v-model:isEmployeeDrawerOpen="isAddNewJobApplicationDrawer"
-      :employee-data="editJobApplicationData"
+      v-model:isJobApplicationDrawerOpen="isAddNewJobApplicationDrawer"
+      :jobApplication-data="editJobApplicationData"
       @formData="handleNewUserData"
     />
   </div>
