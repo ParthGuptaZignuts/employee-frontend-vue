@@ -95,7 +95,7 @@ const switchMode = (newMode) => {
     companyWebsite.value = props.companyData.website || "";
     companyAddress.value = props.companyData.address || "";
     companyStatus.value =
-      props.companyData.status === "Active" ? "Active" : "Inactive";
+      props.companyData.status === "A" ? "Active" : "Inactive";
     adminFirstName.value = props.companyData.admin?.first_name || "";
     adminLastName.value = props.companyData.admin?.last_name || "";
     adminEmail.value = props.companyData.admin?.email || "";
