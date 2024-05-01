@@ -1,4 +1,5 @@
 <script setup>
+
 // Import necessary validators
 import { emailValidator, requiredValidator } from "@validators";
 import { defineProps, defineEmits, onMounted, ref, watch, nextTick } from "vue";
@@ -130,10 +131,12 @@ watch(
 
 // fetch company name details on mounted
 onMounted(fetchCompanyNames);
+
 </script>
 
 <!-- template section -->
 <template>
+
   <div>
   <VNavigationDrawer
     temporary
@@ -247,4 +250,5 @@ onMounted(fetchCompanyNames);
     </PerfectScrollbar>
   </VNavigationDrawer>
 </div>
+
 </template>
