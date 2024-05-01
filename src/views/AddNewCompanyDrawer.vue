@@ -1,4 +1,5 @@
 <script setup>
+
 // Import necessary validators
 import { ref, defineProps, defineEmits, nextTick, watch } from "vue";
 import { PerfectScrollbar } from "vue3-perfect-scrollbar";
@@ -276,6 +277,7 @@ watch(
 
 <!-- template section -->
 <template>
+  
   <div>
     <VNavigationDrawer
       temporary
@@ -445,4 +447,5 @@ watch(
       </PerfectScrollbar>
     </VNavigationDrawer>
   </div>
+
 </template>
