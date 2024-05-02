@@ -1,5 +1,4 @@
 <script setup>
-
 // Import necessary validators
 import { ref, defineProps, defineEmits, nextTick, watch } from "vue";
 import { PerfectScrollbar } from "vue3-perfect-scrollbar";
@@ -28,7 +27,7 @@ const refForm = ref();
 const companyName = ref("");
 const companyEmail = ref("");
 const companyWebsite = ref("");
-const companyLogo = ref("");
+const companyLogo = ref(null);
 const companyAddress = ref("");
 const companyStatus = ref("");
 
@@ -41,15 +40,13 @@ const adminDOB = ref(null);
 const adminJoiningDate = ref(null);
 const mode = ref("add");
 
-const isDateFilled = computed(() => adminDOB.value !== null);
-const isJoiningDateFilled = computed(() => adminJoiningDate.value !== null);
-
 // function called the navigation drawer is closed
 const closeNavigationDrawer = () => {
   emit("update:isDrawerOpen", false);
   refForm.value.reset();
   resetFormValidation(); // Reset form validation state
   resetFormFields(); // Reset form fields
+  companyLogo.value = "";
   nextTick(() => {
     refForm.value.reset();
     resetFormValidation(); // Reset form validation state
@@ -107,7 +104,7 @@ const switchMode = (newMode) => {
   }
 };
 
-// on submit form 
+// on submit form
 const onSubmit = () => {
   refForm.value.validate().then(({ valid }) => {
     if (valid) {
@@ -137,7 +134,7 @@ const onSubmit = () => {
           dob: adminDOB.value,
           joining_date: adminJoiningDate.value,
         },
-        logo: companyLogo.value,
+        logo: companyLogo.value[0],
       };
       if (props.companyData) {
         editUser(userData);
@@ -160,16 +157,11 @@ const handleDrawerModelValueUpdate = (val) => {
   emit("update:isDrawerOpen", val);
 };
 
-// function handle image upload
-const handleFileUpload = (e) => {
-  companyLogo.value = e.target.files[0];
-};
-
-// function when new user is added 
+// function when new user is added
 const addNewUser = async (userData) => {
   try {
     const token = localStorage.getItem("token");
-
+    console.log(userData);
     const formData = new FormData();
     formData.append("name", userData.name);
     formData.append("email", userData.email);
@@ -183,9 +175,8 @@ const addNewUser = async (userData) => {
     formData.append("admin[city]", userData.admin.city);
     formData.append("admin[dob]", userData.admin.dob);
     formData.append("admin[joining_date]", userData.admin.joining_date);
-    if (userData.logo) {
-      formData.append("logo", userData.logo);
-    }
+    formData.append("logo", userData.logo);
+  
 
     const response = await axios.post("/companies/create", formData);
     emit("userData", response.data);
@@ -195,7 +186,7 @@ const addNewUser = async (userData) => {
   }
 };
 
-// function for edit user 
+// function for edit user
 const editUser = async (userData) => {
   try {
     const token = localStorage.getItem("token");
@@ -217,11 +208,7 @@ const editUser = async (userData) => {
       formData.append("logo", userData.logo);
     }
 
-
-    const response = await axios.post(
-      `/companies/${company_id}`,
-      formData,
-    );
+    const response = await axios.post(`/companies/${company_id}`, formData);
     emit("userData", response.data);
 
     closeNavigationDrawer();
@@ -277,7 +264,6 @@ watch(
 
 <!-- template section -->
 <template>
-  
   <div>
     <VNavigationDrawer
       temporary
@@ -333,12 +319,12 @@ watch(
 
                 <!-- 👉 Company Logo -->
                 <VCol cols="12">
-                  <Input
+                  <VFileInput
+                    v-model="companyLogo"
                     type="file"
                     label="Upload logo"
                     prepend-icon="tabler-camera"
-                    accept="image/*"
-                    @change="handleFileUpload"
+                    accept="image/jpeg,image/png,image/jpg,image/gif"
                   />
                 </VCol>
 
@@ -447,5 +433,4 @@ watch(
       </PerfectScrollbar>
     </VNavigationDrawer>
   </div>
-
 </template>
