@@ -315,6 +315,7 @@ watch(
                 <!-- 👉 Company Logo -->
                 <VCol cols="12">
                   <VFileInput
+                    v-if="mode === 'add'"
                     v-model="companyLogo"
                     type="file"
                     label="Upload logo"
