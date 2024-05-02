@@ -107,7 +107,6 @@ const closeDelete = () => {
   tempDelete.value = false;
 };
 
-
 // Function to confirm deletion of item
 const deleteItemConfirm = async () => {
   if (isSubmitEnabled.value) {

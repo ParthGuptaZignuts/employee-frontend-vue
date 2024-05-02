@@ -30,7 +30,7 @@ const isPasswordVisible = ref(false);
 const refVForm = ref();
 const email = ref("");
 const password = ref("");
-const router = useRouter(); 
+const router = useRouter();
 
 // Handle form submission
 const handleSubmit = async () => {
@@ -112,8 +112,8 @@ const handleSubmit = async () => {
         <div class="position-relative bg-background rounded-lg w-100 ma-8 me-0">
           <div class="d-flex align-center justify-center w-100 h-100">
             <VImg
-              max-width="505"
               :src="authThemeImg"
+              max-width="505"
               class="auth-illustration mt-16 mb-2"
             />
           </div>
@@ -150,7 +150,7 @@ const handleSubmit = async () => {
                     v-model="email"
                     :rules="validationRules.email"
                     label="Email"
-                    type="email"     
+                    type="email"
                     autofocus
                     required
                   />
@@ -160,12 +160,12 @@ const handleSubmit = async () => {
                 <VCol cols="12">
                   <AppTextField
                     v-model="password"
-                    label="Password"
                     :type="isPasswordVisible ? 'text' : 'password'"
                     :append-inner-icon="
-                      isPasswordVisible ? 'tabler-eye-off' : 'tabler-eye'
+                    isPasswordVisible ? 'tabler-eye-off' : 'tabler-eye'
                     "
                     :rules="validationRules.password"
+                    label="Password"
                     required
                     @click:append-inner="isPasswordVisible = !isPasswordVisible"
                   />

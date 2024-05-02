@@ -160,8 +160,6 @@ const handleDrawerModelValueUpdate = (val) => {
 // function when new user is added
 const addNewUser = async (userData) => {
   try {
-    const token = localStorage.getItem("token");
-    console.log(userData);
     const formData = new FormData();
     formData.append("name", userData.name);
     formData.append("email", userData.email);
@@ -176,8 +174,6 @@ const addNewUser = async (userData) => {
     formData.append("admin[dob]", userData.admin.dob);
     formData.append("admin[joining_date]", userData.admin.joining_date);
     formData.append("logo", userData.logo);
-  
-
     const response = await axios.post("/companies/create", formData);
     emit("userData", response.data);
     closeNavigationDrawer();
@@ -189,7 +185,6 @@ const addNewUser = async (userData) => {
 // function for edit user
 const editUser = async (userData) => {
   try {
-    const token = localStorage.getItem("token");
     const company_id = props.companyData.id;
     const formData = new FormData();
     formData.append("name", userData.name);

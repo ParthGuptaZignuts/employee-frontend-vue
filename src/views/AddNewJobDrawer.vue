@@ -18,6 +18,7 @@ const props = defineProps({
     default: null,
   },
 });
+
 const emit = defineEmits(["update:isJobDrawerOpen", "jobData"]);
 
 // constant 
@@ -56,7 +57,6 @@ const skillsRequired = ref([]);
 // Function to fetch company names from API
 const fetchCompanyNames = async () => {
   try {
-    const token = localStorage.getItem("token");
     const response = await axios.get("getallcompanies");
     companyOptions.value = response.data.data;
   } catch (error) {
@@ -183,6 +183,7 @@ const closeNavigationDrawer = () => {
 
 // Fetch company names from API on component mount
 onMounted(fetchCompanyNames);
+
 </script>
 
 <template>

@@ -76,7 +76,6 @@ const isSubmitEnabled = computed(() => permentDelete.value || tempDelete.value);
 
 // Function to open add new job drawer
 const openAddNewCompanyDrawer = async (jobData) => {
-  console.log(jobData);
   if (jobData) {
     try {
       const response = await axios.get(`/job/${jobData.id}`);

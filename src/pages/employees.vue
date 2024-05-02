@@ -283,6 +283,7 @@ onMounted(() => {
   fetchData();
   fetchCompanyNames();
 });
+
 </script>
 
 <!-- Template section -->
