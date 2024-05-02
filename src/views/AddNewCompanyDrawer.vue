@@ -39,6 +39,7 @@ const adminCity = ref("");
 const adminDOB = ref(null);
 const adminJoiningDate = ref(null);
 const mode = ref("add");
+const isSubmitting = ref(false);
 
 // function called the navigation drawer is closed
 const closeNavigationDrawer = () => {
@@ -105,9 +106,12 @@ const switchMode = (newMode) => {
 };
 
 // on submit form
-const onSubmit = () => {
-  refForm.value.validate().then(({ valid }) => {
-    if (valid) {
+const onSubmit = async () => {
+  isSubmitting.value = true; // Start loading
+  try {
+    const validationResult = await refForm.value.validate();
+
+    if (validationResult.valid) {
       if (new Date(adminJoiningDate.value) < new Date(adminDOB.value)) {
         toast("Joining Date cannot be before Date of Birth", {
           theme: "auto",
@@ -116,8 +120,10 @@ const onSubmit = () => {
           pauseOnFocusLoss: false,
           dangerouslyHTMLString: true,
         });
+        isSubmitting.value = false; // Stop loading
         return;
       }
+
       const mappedStatus = companyStatus.value === "Active" ? "A" : "I";
       const userData = {
         name: companyName.value,
@@ -136,12 +142,15 @@ const onSubmit = () => {
         },
         logo: companyLogo.value[0],
       };
+
       if (props.companyData) {
-        editUser(userData);
+        await editUser(userData);
       } else {
-        addNewUser(userData);
+        await addNewUser(userData);
       }
+
       closeNavigationDrawer();
+
       setTimeout(() => {
         nextTick(() => {
           resetFormFields();
@@ -149,7 +158,11 @@ const onSubmit = () => {
         });
       }, 500);
     }
-  });
+  } catch (error) {
+    console.error("Form submission error:", error);
+  } finally {
+    isSubmitting.value = false; // Stop loading
+  }
 };
 
 // drawer model value updation
@@ -281,6 +294,7 @@ watch(
             <VForm
               ref="refForm"
               v-model="isFormValid"
+              :disabled="isSubmitting"
               enctype="multipart/form-data"
               @submit.prevent="onSubmit"
             >
@@ -290,6 +304,7 @@ watch(
                   <AppTextField
                     v-model="companyName"
                     :rules="[requiredValidator]"
+                    :disabled="isSubmitting"
                     label="Company Name"
                   />
                 </VCol>
@@ -299,6 +314,7 @@ watch(
                   <AppTextField
                     v-model="companyEmail"
                     :rules="[requiredValidator, emailValidator]"
+                    :disabled="isSubmitting"
                     label="Company Email"
                   />
                 </VCol>
@@ -308,6 +324,7 @@ watch(
                   <AppTextField
                     v-model="companyWebsite"
                     :rules="[requiredValidator]"
+                    :disabled="isSubmitting"
                     label="Company Website"
                   />
                 </VCol>
@@ -317,6 +334,7 @@ watch(
                   <VFileInput
                     v-if="mode === 'add'"
                     v-model="companyLogo"
+                    :disabled="isSubmitting"
                     type="file"
                     label="Upload logo"
                     prepend-icon="tabler-camera"
@@ -329,6 +347,7 @@ watch(
                   <AppTextField
                     v-model="companyAddress"
                     :rules="[requiredValidator]"
+                    :disabled="isSubmitting"
                     label="Company Address"
                   />
                 </VCol>
@@ -340,6 +359,7 @@ watch(
                     label="Company Status"
                     :rules="[requiredValidator]"
                     :items="['Active', 'Inactive']"
+                    :disabled="isSubmitting"
                   />
                 </VCol>
 
@@ -348,6 +368,7 @@ watch(
                   <AppTextField
                     v-model="adminFirstName"
                     :rules="[requiredValidator]"
+                    :disabled="isSubmitting"
                     label="Admin First Name"
                   />
                 </VCol>
@@ -357,6 +378,7 @@ watch(
                   <AppTextField
                     v-model="adminLastName"
                     :rules="[requiredValidator]"
+                    :disabled="isSubmitting"
                     label="Admin Last Name"
                   />
                 </VCol>
@@ -366,6 +388,7 @@ watch(
                   <AppTextField
                     v-model="adminEmail"
                     :rules="[requiredValidator, emailValidator]"
+                    :disabled="isSubmitting"
                     label="Admin Email"
                   />
                 </VCol>
@@ -375,6 +398,7 @@ watch(
                   <AppTextField
                     v-model="adminAddress"
                     :rules="[requiredValidator]"
+                    :disabled="isSubmitting"
                     label="Admin Address"
                   />
                 </VCol>
@@ -392,10 +416,11 @@ watch(
                 <VCol cols="12">
                   <AppDateTimePicker
                     v-model="adminDOB"
-                    placeholder="YYYY-MM-DD"
                     :config="{ dateFormat: 'Y-m-d', maxDate: new Date() }"
-                    label="Date of Birth"
                     :rules="[(v) => !!v || 'Date is required']"
+                    :disabled="isSubmitting"
+                    placeholder="YYYY-MM-DD"
+                    label="Date of Birth"
                   />
                 </VCol>
 
@@ -403,17 +428,26 @@ watch(
                 <VCol cols="12">
                   <AppDateTimePicker
                     v-model="adminJoiningDate"
-                    placeholder="YYYY-MM-DD"
-                    label="Admin Joining Date"
                     :config="{ dateFormat: 'Y-m-d', maxDate: new Date() }"
                     :rules="[(x) => !!x || 'Date is required']"
+                    :disabled="isSubmitting"
+                    placeholder="YYYY-MM-DD"
+                    label="Admin Joining Date"
                   />
                 </VCol>
                 <VDivider />
                 <!-- 👉 Submit and Cancel -->
                 <VCol cols="12">
-                  <VBtn type="submit" class="me-3"> Submit </VBtn>
                   <VBtn
+                    :loading="isSubmitting"
+                    :disabled="isSubmitting"
+                    type="submit"
+                    class="me-3"
+                  >
+                    Submit
+                  </VBtn>
+                  <VBtn
+                    :disabled="isSubmitting"
                     type="reset"
                     variant="tonal"
                     color="secondary"
