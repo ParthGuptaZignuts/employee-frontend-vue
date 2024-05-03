@@ -216,7 +216,7 @@ const editUser = async (userData) => {
       formData.append("logo", userData.logo);
     }
 
-    const response = await axios.post(`/companies/${company_id}`, formData);
+    const response = await axios.post(`/companies/update/${company_id}`, formData);
     emit("userData", response.data);
 
     closeNavigationDrawer();

@@ -77,7 +77,7 @@ const resolveStatusVariant = (status) => {
 const openAddNewCompanyDrawer = async (companyData) => {
   if (companyData) {
     try {
-      const response = await axios.get(`/companies/${companyData.id}`);
+      const response = await axios.get(`/companies/show/${companyData.id}`);
 
       editCompanyData.value = response.data.data;
       if (editCompanyData.value) {
