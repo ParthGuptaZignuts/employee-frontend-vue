@@ -93,7 +93,7 @@ const resolveStatusVariant = (status) => {
 const openAddNewCompanyDrawer = async (employeeData) => {
   if (employeeData) {
     try {
-      const response = await axios.get(`/employee/${employeeData.id}`);
+      const response = await axios.get(`/employee/show/${employeeData.id}`);
       editEmployeeData.value = response.data.data;
       if (editEmployeeData.value) {
         isEditMode.value = true;
@@ -126,7 +126,7 @@ const closeDelete = () => {
 const deleteItemConfirm = async () => {
   if (isSubmitEnabled.value) {
     try {
-      await axios.post(`/employee/${deleteItemId.value}`, {
+      await axios.post(`/employee/delete/${deleteItemId.value}`, {
         permanent_delete: permentDelete.value,
       });
 

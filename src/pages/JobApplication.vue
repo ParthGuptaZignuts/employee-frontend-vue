@@ -77,7 +77,7 @@ const openAddNewJobApplicationDrawer = async (CandidateData) => {
   if (CandidateData) {
     try {
       const response = await axios.get(
-        `/allCandidateInfo/${CandidateData.application_id}`
+        `/allCandidateInfo/show/${CandidateData.application_id}`
       );
       editJobApplicationData.value = response.data.data;
       if (editJobApplicationData.value) {
