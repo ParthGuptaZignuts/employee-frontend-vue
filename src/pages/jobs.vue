@@ -78,7 +78,7 @@ const isSubmitEnabled = computed(() => permentDelete.value || tempDelete.value);
 const openAddNewCompanyDrawer = async (jobData) => {
   if (jobData) {
     try {
-      const response = await axios.get(`/job/${jobData.id}`);
+      const response = await axios.get(`/job/show/${jobData.id}`);
       editJobData.value = response.data.data;
       if (editJobData.value) {
         isEditMode.value = true;
